@@ -1,141 +1,99 @@
-.page {
-  --background: #fafafa;
-  --foreground: #fff;
-
-  --text-primary: #000;
-  --text-secondary: #666;
-
-  --button-primary-hover: #383838;
-  --button-secondary-hover: #f2f2f2;
-  --button-secondary-border: #ebebeb;
-
-  display: flex;
-  min-height: 100vh;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-geist-sans);
-  background-color: var(--background);
-}
-
 .main {
-  display: flex;
-  min-height: 100vh;
-  width: 100%;
-  max-width: 800px;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
-  background-color: var(--foreground);
-  padding: 120px 60px;
+  padding-bottom: 80px;
 }
 
-.intro {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  text-align: left;
-  gap: 24px;
+.header {
+  margin-bottom: 32px;
 }
 
-.intro h1 {
-  max-width: 320px;
-  font-size: 40px;
-  font-weight: 600;
-  line-height: 48px;
-  letter-spacing: -2.4px;
-  text-wrap: balance;
+.title {
+  font-size: 34px;
+  font-weight: 700;
+  margin-bottom: 24px;
   color: var(--text-primary);
 }
 
-.intro p {
-  max-width: 440px;
-  font-size: 18px;
-  line-height: 32px;
-  text-wrap: balance;
-  color: var(--text-secondary);
-}
-
-.intro a {
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.ctas {
+.infoBox {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   display: flex;
-  flex-direction: row;
-  width: 100%;
-  max-width: 440px;
-  gap: 16px;
-  font-size: 14px;
-}
-
-.ctas a {
-  display: flex;
-  justify-content: center;
   align-items: center;
-  height: 40px;
-  padding: 0 16px;
-  border-radius: 128px;
-  border: 1px solid transparent;
-  transition: 0.2s;
-  cursor: pointer;
-  width: fit-content;
-  font-weight: 500;
+  justify-content: space-around;
+  margin-bottom: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  /* Ensure padding doesn't affect width */
 }
 
-a.primary {
-  background: var(--text-primary);
-  color: var(--background);
-  gap: 8px;
+/* Specific styles for semaphore content if needed, but infoBox handles container */
+.semaphoreBox {
+  composes: infoBox;
+  background-color: #1C1C1E;
+  /* Dark Apple-like background restored */
+  justify-content: space-around;
+  /* Ensure items are spaced */
 }
 
-a.secondary {
-  border-color: var(--button-secondary-border);
+.birthdayBox {
+  composes: infoBox;
+  background-color: #e8f5e9 !important;
+  /* Light green */
+  justify-content: flex-start !important;
+  /* Align left for birthday content */
+  gap: 12px;
+  flex-direction: column;
+  /* Stack content vertically */
+  align-items: flex-start;
+  /* Align items to the start */
 }
 
-/* Enable hover only on non-touch devices */
-@media (hover: hover) and (pointer: fine) {
-  a.primary:hover {
-    background: var(--button-primary-hover);
-    border-color: transparent;
-  }
-
-  a.secondary:hover {
-    background: var(--button-secondary-hover);
-    border-color: transparent;
-  }
+.semaphoreItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
 }
 
-@media (max-width: 600px) {
-  .main {
-    padding: 48px 24px;
-  }
-
-  .intro {
-    gap: 16px;
-  }
-
-  .intro h1 {
-    font-size: 32px;
-    line-height: 40px;
-    letter-spacing: -1.92px;
-  }
+.semaphoreCount {
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  min-width: 20px;
 }
 
-@media (prefers-color-scheme: dark) {
-  .logo {
-    filter: invert();
-  }
+.semaphoreDivider {
+  width: 1px;
+  height: 16px;
+  background-color: rgba(255, 255, 255, 0.2);
+}
 
-  .page {
-    --background: #000;
-    --foreground: #000;
+.dotRed,
+.dotOrange,
+.dotGreen {
+  font-size: 14px;
+  /* Emoji size */
+}
 
-    --text-primary: #ededed;
-    --text-secondary: #999;
+/* Old styles kept for compatibility if needed, but mostly replaced */
+.statusDotRed {
+  color: #FF453A;
+  font-weight: bold;
+}
 
-    --button-primary-hover: #ccc;
-    --button-secondary-hover: #1a1a1a;
-    --button-secondary-border: #1a1a1a;
-  }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.linkCard {
+  display: block;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+
+.linkCard:hover {
+  transform: translateY(-2px);
 }

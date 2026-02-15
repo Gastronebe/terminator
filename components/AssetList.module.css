@@ -1,0 +1,39 @@
+.title {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.backLink {
+    display: inline-block;
+    color: var(--accent-blue);
+    text-decoration: none;
+    margin-bottom: 24px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.link {
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s;
+}
+
+.link:hover {
+    transform: translateY(-2px);
+}
+
+.meta {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+.empty {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-top: 48px;
+}

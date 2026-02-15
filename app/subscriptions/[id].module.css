@@ -1,0 +1,49 @@
+.backLink {
+    display: inline-block;
+    margin-bottom: 24px;
+    color: var(--accent-blue);
+    font-weight: 500;
+}
+
+.title {
+    font-size: 32px;
+    margin-bottom: 24px;
+}
+
+.detailCard {
+    margin-bottom: 24px;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.row:last-child {
+    border-bottom: none;
+}
+
+.credentials {
+    margin-top: 24px;
+    padding: 16px;
+    background: #f8f8f8;
+    border-radius: 8px;
+}
+
+.blur {
+    filter: blur(4px);
+    user-select: none;
+    cursor: pointer;
+    transition: filter 0.3s;
+}
+
+.blur:hover {
+    filter: none;
+}
+
+.actions {
+    display: flex;
+    justify-content: center;
+}

@@ -1,0 +1,28 @@
+.title {
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    margin-bottom: 32px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.link {
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s;
+}
+
+.link:hover {
+    transform: translateY(-2px);
+}
+
+.card {
+    height: 100%;
+}

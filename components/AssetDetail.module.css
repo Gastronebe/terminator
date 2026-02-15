@@ -1,0 +1,164 @@
+.backLink {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: var(--accent-blue);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--text-primary);
+}
+
+.subtitle {
+    font-size: 16px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-bottom: 32px;
+}
+
+.section {
+    margin-bottom: 40px;
+}
+
+.sectionTitle {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.itemRow {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.itemRow span:last-child {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.expiredText {
+    color: #FF453A !important;
+    font-weight: 700 !important;
+}
+
+.actions {
+    margin-top: 16px;
+    display: flex;
+    gap: 12px;
+}
+
+.actionBtn {
+    padding: 6px 12px;
+    background: #f0f0f0;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.actionBtnDelete {
+    padding: 6px 12px;
+    background: none;
+    border: none;
+    color: #FF453A;
+    font-size: 12px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+/* Editing Forms */
+.editForm {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.editField {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.editField label {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #888;
+}
+
+.editField input {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.editActions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.editAssetForm {
+    background: #fff;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-bottom: 32px;
+}
+
+.titleInput {
+    font-size: 24px;
+    font-weight: 700;
+    width: 100%;
+    margin-bottom: 8px;
+    border: 1px solid #ddd;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.subtitleInput {
+    font-size: 16px;
+    width: 100%;
+    border: 1px solid #ddd;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.addItemBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 120px;
+    border: 2px dashed #e0e0e0;
+    border-radius: 16px;
+    background: none;
+    color: var(--accent-blue);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.addItemBtn:hover {
+    border-color: var(--accent-blue);
+    background: rgba(0, 122, 255, 0.05);
+}
+
+.newItemCard {
+    border: 2px solid var(--accent-blue);
+}
