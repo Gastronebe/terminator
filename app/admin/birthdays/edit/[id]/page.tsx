@@ -1,28 +1,54 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
 import AdminLayout from '@/components/AdminLayout';
 import Card from '@/components/Card';
 import { db } from '@/lib/firebase';
-import { collection, addDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useAuth } from '@/contexts/AuthContext';
-import styles from './page.module.css';
+import styles from './page.module.css'; // Reusing styles if possible, or inline
 
-// Reuse styles from existing forms or generic admin styles
-// Since I cannot easily see page.module.css content for every file, I will assume a standard structure 
-// or I can create a new css file. For now, I'll inline some styles or try to reuse if possible.
-// Actually, I'll copy the structure of NewDocumentPage and assume `page.module.css` exists or I'll create it.
-// To be safe, I'll create the CSS file too.
-
-export default function NewBirthdayPage() {
+export default function EditBirthdayPage() {
     const router = useRouter();
+    const { id } = useParams();
     const { user } = useAuth();
 
     const [name, setName] = useState('');
     const [date, setDate] = useState('');
     const [photo, setPhoto] = useState<File | null>(null);
-    const [loading, setLoading] = useState(false);
+    const [currentPhotoUrl, setCurrentPhotoUrl] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            if (!id) return;
+            try {
+                const docRef = doc(db, 'birthdays', id as string);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    setName(data.name);
+                    // Convert timestamp to YYYY-MM-DD
+                    const isoDate = new Date(data.date).toISOString().split('T')[0];
+                    setDate(isoDate);
+                    setCurrentPhotoUrl(data.photoUrl || '');
+                } else {
+                    alert('Narozeniny nenalezeny');
+                    router.push('/birthdays');
+                }
+            } catch (error) {
+                console.error("Error fetching birthday:", error);
+                alert('Chyba při načítání');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [id, router]);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -30,55 +56,46 @@ export default function NewBirthdayPage() {
         }
     };
 
-    const convertToBase64 = (file: File): Promise<string> => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result as string);
-            reader.onerror = error => reject(error);
-        });
-    };
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
+        setSaving(true);
 
         try {
-            let photoUrl = '';
+            let photoUrl = currentPhotoUrl;
             if (photo) {
-                // Resize image instead of checking strict size
-                // We accept larger files but compress them before storage
                 try {
                     const { resizeImage } = await import('@/utils/image');
                     photoUrl = await resizeImage(photo);
                 } catch (err) {
                     console.error("Resize failed", err);
                     alert("Nepodařilo se zpracovat obrázek.");
-                    setLoading(false);
+                    setSaving(false);
                     return;
                 }
             }
 
-            await addDoc(collection(db, 'birthdays'), {
+            await updateDoc(doc(db, 'birthdays', id as string), {
                 name,
                 date: new Date(date).getTime(),
                 photoUrl,
-                createdAt: Date.now()
+                updatedAt: Date.now()
             });
 
             router.push('/birthdays');
         } catch (error) {
             console.error(error);
-            alert('Chyba při vytváření');
+            alert('Chyba při ukládání');
         } finally {
-            setLoading(false);
+            setSaving(false);
         }
     };
+
+    if (loading) return <div style={{ padding: 20, textAlign: 'center' }}>Načítám...</div>;
 
     return (
         <AdminLayout>
             <div className="container" style={{ maxWidth: 600, margin: '0 auto', padding: 20 }}>
-                <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 20 }}>Nové Narozeniny</h1>
+                <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 20 }}>Upravit Narozeniny</h1>
 
                 <Card>
                     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -107,6 +124,14 @@ export default function NewBirthdayPage() {
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                             <label style={{ fontSize: 14, fontWeight: 500, color: '#666' }}>Fotka (automaticky se zmenší)</label>
+
+                            {currentPhotoUrl && !photo && (
+                                <div style={{ marginBottom: 8 }}>
+                                    <img src={currentPhotoUrl} alt="Current" style={{ width: 100, height: 100, objectFit: 'cover', borderRadius: 8 }} />
+                                    <p style={{ fontSize: 12, color: '#999', margin: 0 }}>Současná fotka</p>
+                                </div>
+                            )}
+
                             <input
                                 type="file"
                                 accept="image/*"
@@ -115,14 +140,23 @@ export default function NewBirthdayPage() {
                             />
                         </div>
 
-                        <button
-                            type="submit"
-                            className="btn btn-primary"
-                            disabled={loading}
-                            style={{ marginTop: 16, padding: 12, borderRadius: 8, background: '#007AFF', color: 'white', border: 'none', fontWeight: 600, cursor: 'pointer' }}
-                        >
-                            {loading ? 'Vytvářím...' : 'Vytvořit'}
-                        </button>
+                        <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+                            <button
+                                type="submit"
+                                className="btn btn-primary"
+                                disabled={saving}
+                                style={{ flex: 1, padding: 12, borderRadius: 8, background: '#007AFF', color: 'white', border: 'none', fontWeight: 600, cursor: 'pointer' }}
+                            >
+                                {saving ? 'Ukládám...' : 'Uložit změny'}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => router.back()}
+                                style={{ padding: 12, borderRadius: 8, background: '#f5f5f5', color: '#333', border: 'none', fontWeight: 600, cursor: 'pointer' }}
+                            >
+                                Zrušit
+                            </button>
+                        </div>
                     </form>
                 </Card>
             </div>

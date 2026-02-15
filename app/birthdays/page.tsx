@@ -5,7 +5,7 @@ import Card from '@/components/Card';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatDate } from '@/utils/status';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Edit } from 'lucide-react';
 import { deleteDoc, doc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
@@ -94,20 +94,23 @@ export default function BirthdaysPage() {
                             </div>
 
                             {isAdmin && (
-                                <button
-                                    onClick={() => handleDelete(birthday.id)}
-                                    style={{
-                                        position: 'absolute',
-                                        top: 10,
-                                        right: 10,
-                                        background: 'none',
-                                        border: 'none',
-                                        color: '#ccc',
-                                        cursor: 'pointer'
-                                    }}
-                                >
-                                    <Trash2 size={16} />
-                                </button>
+                                <div style={{ position: 'absolute', top: 10, right: 10, display: 'flex', gap: 8 }}>
+                                    <Link href={`/admin/birthdays/edit/${birthday.id}`} style={{ color: '#ccc' }}>
+                                        <Edit size={16} />
+                                    </Link>
+                                    <button
+                                        onClick={() => handleDelete(birthday.id)}
+                                        style={{
+                                            background: 'none',
+                                            border: 'none',
+                                            color: '#ccc',
+                                            cursor: 'pointer',
+                                            padding: 0
+                                        }}
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                </div>
                             )}
                         </Card>
                     );
