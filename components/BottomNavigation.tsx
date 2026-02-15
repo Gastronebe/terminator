@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Car, FileText, PieChart, Menu } from 'lucide-react';
+import { Home, Car, CreditCard, Home as HomeIcon, Menu } from 'lucide-react';
 import styles from './BottomNavigation.module.css';
 
 export default function BottomNavigation() {
@@ -20,18 +20,22 @@ export default function BottomNavigation() {
                 <Car size={24} />
                 <span>Auta</span>
             </Link>
-            <Link href="/documents" className={`${styles.navItem} ${isActive('/documents') ? styles.active : ''}`}>
-                <FileText size={24} />
-                <span>Doklady</span>
+
+            {/* Center Highlighted Item */}
+            <div className={styles.centerItemWrapper}>
+                <Link href="/cards" className={`${styles.centerItem} ${isActive('/cards') ? styles.activeCenter : ''}`}>
+                    <CreditCard size={28} />
+                </Link>
+                <span className={styles.centerLabel}>Karty</span>
+            </div>
+
+            <Link href="/assets/properties" className={`${styles.navItem} ${isActive('/assets/properties') ? styles.active : ''}`}>
+                <HomeIcon size={24} />
+                <span>Nemovitosti</span>
             </Link>
-            <Link href="/finance" className={`${styles.navItem} ${isActive('/finance') ? styles.active : ''}`}>
-                <PieChart size={24} />
-                <span>Statistiky</span>
-            </Link>
-            {/* "More" menu or generic link to settings/other for now pointing to admin/settings equivalent if exists, or just a placeholder for the menu expansion logic later */}
-            <Link href="/admin" className={`${styles.navItem} ${isActive('/admin') ? styles.active : ''}`}>
+            <Link href="/more" className={`${styles.navItem} ${isActive('/more') ? styles.active : ''}`}>
                 <Menu size={24} />
-                <span>Více</span>
+                <span>Další</span>
             </Link>
         </nav>
     );

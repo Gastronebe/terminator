@@ -2,15 +2,16 @@
 
 import { useAssetItems, useDocuments, useAssets, useSubscriptions, useBirthdays, useCalendarEvents } from "@/hooks/useData";
 import { calculateStatus } from "@/utils/status";
-import { Car, Home as HomeIcon, CreditCard, FileText, PieChart, Gift, Calendar as CalendarIcon, LogOut } from 'lucide-react';
+import { LogOut, Calendar, Gift, ChefHat } from 'lucide-react';
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import StatusCard from "@/components/StatusCard";
-import CategoryCard from "@/components/CategoryCard";
+import DashboardWidget from "@/components/DashboardWidget";
 import styles from "./page.module.css";
-import ImportantEventsWidget from "@/components/ImportantEventsWidget";
+/* Removed ImportantEventsWidget import as logic moves here or to a new wrapper */
+/* Actually, let's keep logic inline or use a custom component if needed. 
+   To keep it clean, I will implement logic here for MVP. */
 
 export default function Home() {
   const router = useRouter();
@@ -19,6 +20,7 @@ export default function Home() {
   const { data: assets } = useAssets();
   const { data: subscriptions } = useSubscriptions();
   const { data: birthdays } = useBirthdays();
+  const { data: events } = useCalendarEvents();
 
   const handleLogout = async () => {
     try {
@@ -67,7 +69,19 @@ export default function Home() {
   };
 
   const nearestBirthday = birthdays.length > 0 ? birthdays.sort((a, b) => getNextBirthday(a.date).getTime() - getNextBirthday(b.date).getTime())[0] : null;
-  const daysToBirthday = nearestBirthday ? Math.ceil((getNextBirthday(nearestBirthday.date).getTime() - new Date().setHours(0, 0, 0, 0)) / 86400000) : null;
+  const birthdayDays = nearestBirthday ? Math.ceil((getNextBirthday(nearestBirthday.date).getTime() - new Date().setHours(0, 0, 0, 0)) / 86400000) : null;
+
+  // Event logic
+  const nearestEvent = events && events.length > 0 ? events[0] : null;
+
+  const getEventDays = (dateStr: string) => {
+    const d = new Date(dateStr);
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    return Math.ceil((d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  };
+  const eventDays = nearestEvent ? getEventDays(nearestEvent.start) : null;
+
 
   return (
     <main className="container">
@@ -88,26 +102,43 @@ export default function Home() {
         <StatusCard type="active" count={totalActive} onClick={() => router.push('/status/active')} />
       </section>
 
-      {/* Widgets Area */}
-      <section className={styles.widgets}>
-        {nearestBirthday && (
-          <div className={styles.widgetCard} style={{ borderLeft: '4px solid var(--color-birthdays)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ fontSize: 24 }}>🎂</div>
-              <div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
-                  {daysToBirthday === 0 ? 'Dnes!' : `Za ${daysToBirthday} dní`}
-                </div>
-                <div style={{ fontSize: 16, fontWeight: 600 }}>{nearestBirthday.name}</div>
+      {/* Widget Grid (3 columns) */}
+      <section className={styles.widgetGrid}>
+        {/* Events Widget */}
+        <DashboardWidget title="Události" icon={Calendar} color="var(--color-events)" onClick={() => router.push('/events')}>
+          {nearestEvent ? (
+            <>
+              <div className={styles.widgetValue}>{nearestEvent.summary}</div>
+              <div className={styles.widgetLabel}>
+                {eventDays === 0 ? 'Dnes' : eventDays === 1 ? 'Zítra' : `Za ${eventDays} dní`}
               </div>
-            </div>
-          </div>
-        )}
-        <ImportantEventsWidget />
+            </>
+          ) : (
+            <div className={styles.widgetValue} style={{ color: '#aaa' }}>Žádné akce</div>
+          )}
+        </DashboardWidget>
+
+        {/* Birthday Widget */}
+        <DashboardWidget title="Narozeniny" icon={Gift} color="var(--color-birthdays)" onClick={() => router.push('/birthdays')}>
+          {nearestBirthday ? (
+            <>
+              <div className={styles.widgetValue}>{nearestBirthday.name}</div>
+              <div className={styles.widgetLabel}>
+                {birthdayDays === 0 ? 'Dnes' : birthdayDays === 1 ? 'Zítra' : `Za ${birthdayDays} dní`}
+              </div>
+            </>
+          ) : (
+            <div className={styles.widgetValue} style={{ color: '#aaa' }}>-</div>
+          )}
+        </DashboardWidget>
+
+        {/* Cooking Widget */}
+        <DashboardWidget title="Vaření" icon={ChefHat} color="#FF9500" onClick={() => alert('Anketa již brzy!')}>
+          <div className={styles.widgetValue}>Co budeme vařit?</div>
+          <div className={styles.widgetLabel}>Anketa již brzy</div>
+        </DashboardWidget>
       </section>
 
-      {/* Main Grid removed as per resize request */}
-      {/* <section className={styles.categoryGrid}> ... </section> */}
     </main>
   );
 }
