@@ -11,8 +11,23 @@ export interface User {
 export type AssetType = 'car' | 'property';
 
 export interface AssetMetadata {
-    spz?: string;
+    spz?: string; // Car specific
     note?: string;
+    imageUrl?: string; // Main asset photo
+    greenCard?: {
+        url: string;
+        validUntil?: number;
+    };
+    otherDocuments?: {
+        name: string;
+        url: string;
+        type: 'pdf' | 'image';
+        uploadedAt: number;
+    }[];
+    odometerHistory?: {
+        date: number;
+        value: number;
+    }[];
 }
 
 export interface Asset {
@@ -88,4 +103,15 @@ export interface Birthday {
     date: number; // timestamp of the birth date (year matters for age, but for sorting we use month/day)
     photoUrl?: string; // Base64 or URL
     createdAt: number;
+}
+
+export interface DiscountCard {
+    id: string;
+    name: string;
+    code: string;
+    type: 'barcode' | 'qrcode' | 'text';
+    color?: string;
+    note?: string;
+    logoUrl?: string;
+    createdAt?: number;
 }

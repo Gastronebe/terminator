@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { collection, query, onSnapshot, where, orderBy, DocumentData } from 'firebase/firestore';
 import { db } from '@/lib/firebase'; // Ensure this path is correct
-import { Asset, AssetItem, PersonalDocument, Subscription, User, AccessRequest, Birthday } from '@/types';
+import { Asset, AssetItem, PersonalDocument, Subscription, User, AccessRequest, Birthday, DiscountCard } from '@/types';
 
 // Generic hook helper
 function useCollection<T>(collectionName: string, queryConstraints: any[] = []) {
@@ -56,4 +56,36 @@ export function useAccessRequests() {
 
 export function useBirthdays() {
     return useCollection<Birthday>('birthdays');
+}
+
+export function useDiscountCards() {
+    return useCollection<DiscountCard>('discountCards');
+}
+
+// Google Calendar Events Hook
+export function useCalendarEvents() {
+    const [data, setData] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchEvents = async () => {
+            try {
+                const res = await fetch('/api/events');
+                if (!res.ok) throw new Error('Failed to fetch events');
+                const json = await res.json();
+                if (json.error) throw new Error(json.error);
+                setData(Array.isArray(json) ? json : []);
+            } catch (err) {
+                console.error(err);
+                setError('Failed to load events');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchEvents();
+    }, []);
+
+    return { data, loading, error };
 }

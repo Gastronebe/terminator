@@ -1,0 +1,65 @@
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.eventRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.eventRow:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.dateBadge {
+    background-color: #f5f5f7;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    min-width: 60px;
+    text-align: center;
+}
+
+.eventContent {
+    flex: 1;
+    overflow: hidden;
+}
+
+.eventName {
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 15px;
+}
+
+.eventTime {
+    font-size: 12px;
+    color: #888;
+}
+
+.moreLink {
+    text-align: center;
+    margin-top: 8px;
+    font-size: 13px;
+}
+
+.moreLink a {
+    color: var(--accent-blue);
+    text-decoration: none;
+}
+
+.empty {
+    color: #888;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 14px;
+}

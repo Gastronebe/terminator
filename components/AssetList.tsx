@@ -45,6 +45,15 @@ export default function AssetList() {
                         <div key={asset.id} style={{ position: 'relative' }}>
                             <Link href={`/assets/${folder}/${asset.id}`} className={styles.link}>
                                 <Card title={asset.name} status={status} key={asset.id}>
+                                    {asset.metadata.imageUrl && (
+                                        <div style={{ marginBottom: 12, height: 160, overflow: 'hidden', borderRadius: 8 }}>
+                                            <img
+                                                src={asset.metadata.imageUrl}
+                                                alt={asset.name}
+                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                            />
+                                        </div>
+                                    )}
                                     <p className={styles.meta}>
                                         {isCar ? asset.metadata.spz : asset.metadata.note}
                                     </p>

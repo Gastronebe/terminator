@@ -4,12 +4,14 @@ import Card from "@/components/Card";
 import Link from "next/link";
 import styles from "./page.module.css";
 // import { MOCK_ASSET_ITEMS, MOCK_DOCUMENTS } from "@/lib/mockData"; // REMOVED
-import { useAssetItems, useDocuments, useAssets, useSubscriptions, useBirthdays } from "@/hooks/useData";
+import { useAssetItems, useDocuments, useAssets, useSubscriptions, useBirthdays, useCalendarEvents } from "@/hooks/useData";
 import { calculateStatus } from "@/utils/status";
-import { Car, Home as HomeIcon, CreditCard, FileText, PieChart, Gift, LogOut } from 'lucide-react';
+import { Car, Home as HomeIcon, CreditCard, FileText, PieChart, Gift, LogOut, Calendar } from 'lucide-react';
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
+import ImportantEvents from "@/components/ImportantEvents";
+import ImportantEventsWidget from "@/components/ImportantEventsWidget";
 
 export default function Home() {
   const router = useRouter();
@@ -159,6 +161,9 @@ export default function Home() {
               </div>
             </div>
           )}
+
+          {/* Important Events Widget */}
+          <ImportantEventsWidget />
         </div>
       </header>
 
@@ -186,6 +191,16 @@ export default function Home() {
         <Link href="/birthdays" className={styles.linkCard}>
           <Card title="Narozeniny" icon={<Gift size={24} />} headerAction={daysToBirthday !== null && daysToBirthday <= 7 ? <span className={styles.statusDotRed}>!</span> : undefined}>
             <p>Oslavy a výročí</p>
+          </Card>
+        </Link>
+        <Link href="/events" className={styles.linkCard}>
+          <Card title="Události" icon={<Calendar size={24} />}>
+            <p>Informace o událostech z kalendáře</p>
+          </Card>
+        </Link>
+        <Link href="/cards" className={styles.linkCard}>
+          <Card title="Karty" icon={<CreditCard size={24} />}>
+            <p>Slevové a věrnostní karty</p>
           </Card>
         </Link>
         <Link href="/finance" className={styles.linkCard}>
