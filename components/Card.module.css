@@ -1,45 +1,44 @@
 .cardWrapper {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-    padding: 20px;
-    transition: transform 0.2s, box-shadow 0.2s;
+    /* Base styles from globals.css .card class are applied */
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 12px;
+    background: var(--surface);
 }
 
 .header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    justify-content: space-between;
+    gap: 12px;
 }
 
 .titleRow {
     display: flex;
     align-items: center;
     gap: 12px;
+    flex: 1;
 }
 
 .icon {
+    color: var(--text-primary);
     display: flex;
     align-items: center;
-    justify-content: center;
-    color: var(--accent-blue);
 }
 
 .title {
-    margin: 0;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
+    margin: 0;
     color: var(--text-primary);
 }
 
 .content {
-    color: var(--text-secondary);
-    font-size: 15px;
-    line-height: 1.5;
+    /* padding-top is handled by flex gap */
+    width: 100%;
 }
 
-.headerAction {
-    display: flex;
-    align-items: center;
+.statusIndicator {
+    font-size: 13px;
 }

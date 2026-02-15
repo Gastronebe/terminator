@@ -1,19 +1,22 @@
 .title {
     font-size: 28px;
     font-weight: 700;
+    margin: 0;
 }
 
 .backLink {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
     color: var(--accent-blue);
     text-decoration: none;
     margin-bottom: 24px;
+    font-weight: 500;
 }
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
 }
 
 .mainCard {
@@ -24,17 +27,19 @@
     justify-content: space-around;
     flex-wrap: wrap;
     gap: 32px;
+    padding: 32px !important;
 }
 
 .chartContainer {
     position: relative;
-    width: 200px;
-    height: 200px;
+    width: 220px;
+    height: 220px;
 }
 
 .donut {
     width: 100%;
     height: 100%;
+    transform: rotate(-90deg);
 }
 
 .centerText {
@@ -47,18 +52,19 @@
 
 .centerValue {
     font-weight: 700;
-    font-size: 18px;
+    font-size: 20px;
+    color: var(--text-primary);
 }
 
 .centerLabel {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--text-secondary);
 }
 
 .legend {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
     min-width: 200px;
 }
 
@@ -77,21 +83,24 @@
 
 .legendLabel {
     flex: 1;
+    color: var(--text-secondary);
 }
 
 .legendValue {
     font-weight: 600;
+    color: var(--text-primary);
 }
 
 .statBig {
     font-size: 32px;
     font-weight: 700;
     color: var(--text-primary);
+    margin-bottom: 4px;
 }
 
 .note {
     color: var(--text-secondary);
-    margin-top: 8px;
+    font-size: 14px;
 }
 
 .payerList {
@@ -103,14 +112,30 @@
 .payerItem {
     display: flex;
     justify-content: space-between;
-    border-bottom: 1px solid #f0f0f0;
-    padding-bottom: 8px;
+    align-items: center;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding-bottom: 12px;
 }
 
 .payerItem:last-child {
     border-bottom: none;
+    padding-bottom: 0;
 }
 
 .payerName {
     font-weight: 500;
+    color: var(--text-primary);
+}
+
+.payerAmount {
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+@media (max-width: 600px) {
+    .mainCard {
+        flex-direction: column;
+        padding: 24px !important;
+        gap: 24px;
+    }
 }

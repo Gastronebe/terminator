@@ -26,9 +26,11 @@ const Card: React.FC<CardProps> = ({ children, className = '', style, title, sta
                         </div>
                     )}
                     {status && !headerAction && (
-                        <span className={`status-badge status-${status}`}>
-                            {status === 'active' ? 'Aktivní' : status === 'warning' ? 'Blíží se' : 'Expirace'}
-                        </span>
+                        <div className={styles.statusIndicator}>
+                            {status === 'active' && <span style={{ color: 'var(--status-active)', fontWeight: 600 }}>Aktivní</span>}
+                            {status === 'warning' && <span style={{ color: 'var(--status-warning)', fontWeight: 600 }}>Brzy vyprší</span>}
+                            {status === 'expired' && <span style={{ color: 'var(--status-expired)', fontWeight: 600 }}>Po termínu</span>}
+                        </div>
                     )}
                 </div>
             )}

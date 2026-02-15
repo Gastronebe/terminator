@@ -4,7 +4,7 @@ import Card from '@/components/Card';
 import Link from 'next/link';
 import { useSubscriptions, useAssetItems, useAssets } from '@/hooks/useData';
 import styles from './page.module.css';
-import { BarChart3, PieChart } from 'lucide-react';
+import { BarChart3, ChevronLeft, PieChart } from 'lucide-react';
 
 export default function StatisticsPage() {
     const { data: subscriptions } = useSubscriptions();
@@ -28,13 +28,6 @@ export default function StatisticsPage() {
         payerStats[p] += amount;
     };
 
-    // Subscriptions (annualized) - EXCLUDED FROM TOTAL as per request
-    // subscriptions.forEach(sub => {
-    //     const yearly = sub.billingPeriod === 'monthly' ? sub.monthlyPrice * 12 : sub.monthlyPrice;
-    //     costs.subscriptions += yearly;
-    //     addPayerCost(sub.payer, yearly);
-    // });
-
     // Asset Items (annualized)
     assetItems.forEach(item => {
         if (!item.price) return;
@@ -53,10 +46,10 @@ export default function StatisticsPage() {
     costs.total = costs.cars + costs.properties;
 
     // 2. Prepare Chart Data (Category)
+    // Use CSS variable colors
     const data = [
-        { label: 'Auta', value: costs.cars, color: '#FF9500' },
-        { label: 'Nemovitosti', value: costs.properties, color: '#30B0C7' },
-        // { label: 'Předplatné', value: costs.subscriptions, color: '#FF2D55' }, // Excluded
+        { label: 'Auta', value: costs.cars, color: 'var(--color-cars)' },
+        { label: 'Nemovitosti', value: costs.properties, color: 'var(--color-properties)' },
     ].filter(d => d.value > 0);
 
     // Calculate chart segments
@@ -76,28 +69,38 @@ export default function StatisticsPage() {
 
     return (
         <main className="container">
-            <Link href=".." className={styles.backLink}>← Zpět</Link>
+            <Link href="/" className={styles.backLink}>
+                <ChevronLeft size={20} /> Zpět
+            </Link>
+
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
-                <BarChart3 size={32} />
+                <div style={{ padding: 8, background: 'var(--color-finance)', borderRadius: 12, color: 'white' }}>
+                    <BarChart3 size={24} />
+                </div>
                 <h1 className={styles.title} style={{ marginBottom: 0 }}>Statistiky</h1>
             </div>
 
             <div className={styles.grid}>
-                <Card title="Roční náklady" className={styles.mainCard}>
+                <Card className={styles.mainCard}>
                     <div className={styles.chartContainer}>
                         {/* Donut Chart SVG */}
-                        <svg viewBox="-1 -1 2 2" style={{ transform: 'rotate(-90deg)' }} className={styles.donut}>
+                        <svg viewBox="-1 -1 2 2" className={styles.donut}>
                             {chartSegments.map((segment, i) => {
                                 const [startX, startY] = getCoordinatesForPercent(segment.start);
                                 const [endX, endY] = getCoordinatesForPercent(segment.start + segment.percent);
                                 const largeArcFlag = segment.percent > 0.5 ? 1 : 0;
-                                const pathData = `M ${startX} ${startY} A 1 1 0 ${largeArcFlag} 1 ${endX} ${endY} L 0 0`;
+
+                                // Fix for 100% circle
+                                const pathData = segment.percent === 1
+                                    ? "M 1 0 A 1 1 0 1 1 -1 0 A 1 1 0 1 1 1 0"
+                                    : `M ${startX} ${startY} A 1 1 0 ${largeArcFlag} 1 ${endX} ${endY} L 0 0`;
+
                                 return (
-                                    <path d={pathData} fill={segment.color} key={i} />
+                                    <path d={pathData} fill={segment.color} key={i} stroke="var(--surface)" strokeWidth="0.02" />
                                 );
                             })}
                             {/* Inner Circle for Donut Effect */}
-                            <circle cx="0" cy="0" r="0.6" fill="white" />
+                            <circle cx="0" cy="0" r="0.7" fill="var(--surface)" />
                         </svg>
 
                         <div className={styles.centerText}>
@@ -119,7 +122,7 @@ export default function StatisticsPage() {
 
                 <Card title="Podle plátce">
                     <div className={styles.payerList}>
-                        {Object.entries(payerStats).map(([name, amount]) => (
+                        {Object.entries(payerStats).sort((a, b) => b[1] - a[1]).map(([name, amount]) => (
                             <div key={name} className={styles.payerItem}>
                                 <span className={styles.payerName}>{name}</span>
                                 <span className={styles.payerAmount}>{Math.round(amount).toLocaleString()} Kč</span>
@@ -130,7 +133,7 @@ export default function StatisticsPage() {
 
                 <Card title="Měsíční průměr">
                     <div className={styles.statBig}>{Math.round(costs.total / 12).toLocaleString()} Kč</div>
-                    <p className={styles.note}>Průměrná zátěž rozpočtu</p>
+                    <p className={styles.note}>Průměrná zátěž rodinného rozpočtu (bez předplatných)</p>
                 </Card>
             </div>
         </main>

@@ -1,99 +1,73 @@
-.main {
-  padding-bottom: 80px;
+.stickyHeader {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(245, 245, 247, 0.95);
+  backdrop-filter: blur(10px);
+  margin: -20px -20px 20px -20px;
+  /* Counteract container padding */
+  padding: 16px 20px;
 }
 
-.header {
-  margin-bottom: 32px;
-}
-
-.title {
-  font-size: 34px;
-  font-weight: 700;
-  margin-bottom: 24px;
-  color: var(--text-primary);
-}
-
-.infoBox {
-  background: white;
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+.logoRow {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: space-around;
-  margin-bottom: 16px;
-  width: 100%;
-  box-sizing: border-box;
-  /* Ensure padding doesn't affect width */
 }
 
-/* Specific styles for semaphore content if needed, but infoBox handles container */
-.semaphoreBox {
-  composes: infoBox;
-  background-color: #1C1C1E;
-  /* Dark Apple-like background restored */
-  justify-content: space-around;
-  /* Ensure items are spaced */
+.logo {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
 }
 
-.birthdayBox {
-  composes: infoBox;
-  background-color: #e8f5e9 !important;
-  /* Light green */
-  justify-content: flex-start !important;
-  /* Align left for birthday content */
-  gap: 12px;
-  flex-direction: column;
-  /* Stack content vertically */
-  align-items: flex-start;
-  /* Align items to the start */
+.logoutBtn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
 }
 
-.semaphoreItem {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.semaphoreCount {
-  color: white;
-  font-weight: 600;
-  font-size: 16px;
-  min-width: 20px;
-}
-
-.semaphoreDivider {
-  width: 1px;
-  height: 16px;
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
-.dotRed,
-.dotOrange,
-.dotGreen {
-  font-size: 14px;
-  /* Emoji size */
-}
-
-/* Old styles kept for compatibility if needed, but mostly replaced */
-.statusDotRed {
-  color: #FF453A;
-  font-weight: bold;
-}
-
-.grid {
+.statusGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
 }
 
-.linkCard {
-  display: block;
-  text-decoration: none;
-  transition: transform 0.2s ease;
+.widgets {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
 }
 
-.linkCard:hover {
-  transform: translateY(-2px);
+.widgetCard {
+  background: var(--surface);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.categoryGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 768px) {
+  .categoryGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .stickyHeader {
+    display: none;
+    /* Hide sticky header on desktop as we have sidebar */
+  }
+
+  .categoryGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }

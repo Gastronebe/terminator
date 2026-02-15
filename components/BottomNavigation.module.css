@@ -1,0 +1,48 @@
+.bottomNav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 84px;
+    /* Sufficient for touch targets + safe area */
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-around;
+    padding-bottom: env(safe-area-inset-bottom, 20px);
+    padding-top: 12px;
+    z-index: 1000;
+}
+
+@media (min-width: 1024px) {
+    .bottomNav {
+        display: none;
+    }
+}
+
+.navItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    color: var(--text-secondary);
+    font-size: 10px;
+    font-weight: 500;
+    flex: 1;
+    transition: color 0.2s ease;
+}
+
+.navItem.active {
+    color: var(--color-cars);
+    /* Using primary accent color */
+}
+
+.navItem svg {
+    transition: transform 0.2s ease;
+}
+
+.navItem:active svg {
+    transform: scale(0.9);
+}

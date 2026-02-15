@@ -1,0 +1,31 @@
+.tabsContainer {
+    display: flex;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+    gap: 24px;
+    overflow-x: auto;
+}
+
+.tabBtn {
+    padding: 12px 4px;
+    border: none;
+    background: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.tabBtn:hover {
+    color: var(--text-primary);
+}
+
+.active {
+    border-bottom-color: var(--color-cars);
+    /* Default accent, overrides via style if needed */
+    color: var(--color-cars);
+    font-weight: 600;
+}
