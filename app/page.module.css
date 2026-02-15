@@ -36,9 +36,9 @@
 }
 
 .widgetGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   margin-bottom: 24px;
 }
 
@@ -65,5 +65,10 @@
 @media (min-width: 1024px) {
   .stickyHeader {
     display: none;
+  }
+
+  .widgetGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
   }
 }
