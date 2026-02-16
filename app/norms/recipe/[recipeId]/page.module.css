@@ -120,6 +120,29 @@
     font-style: italic;
 }
 
+/* Side Dishes */
+.sideDishesList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.sideDishItem {
+    background-color: #ecfccb;
+    /* lime-100 */
+    color: #365314;
+    /* lime-900 */
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: 1px solid #d9f99d;
+    /* lime-200 */
+}
+
 /* Ingredients Table */
 .tableWrapper {
     overflow-x: auto;

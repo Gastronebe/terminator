@@ -1,6 +1,6 @@
 {
   "name": "home-app",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
@@ -15,6 +15,7 @@
     "dotenv": "^17.3.1",
     "firebase": "^12.9.0",
     "firebase-admin": "^13.6.1",
+    "googleapis": "^171.4.0",
     "ical.js": "^2.2.1",
     "lucide-react": "^0.564.0",
     "next": "16.1.6",

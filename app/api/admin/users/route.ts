@@ -3,7 +3,7 @@ import { adminAuth, adminDb } from '@/lib/firebaseAdmin';
 
 export async function POST(req: NextRequest) {
     try {
-        const { email, password, name, role } = await req.json();
+        const { email, password, name, role, allowedMenuItems } = await req.json();
 
         if (!email || !password || !name) {
             return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
             name,
             email,
             role: role || 'user',
+            allowedMenuItems: allowedMenuItems || [],
             createdAt: Date.now(),
         });
 

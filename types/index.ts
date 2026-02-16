@@ -5,6 +5,7 @@ export interface User {
     name: string;
     email: string;
     role: UserRole;
+    allowedMenuItems?: string[]; // IDs of menu items user can access
     createdAt: number; // timestamp
 }
 
@@ -101,6 +102,7 @@ export interface Birthday {
     id: string;
     name: string;
     date: number; // timestamp of the birth date (year matters for age, but for sorting we use month/day)
+    nameDayDate?: number; // timestamp of the name day (month/day matters)
     photoUrl?: string; // Base64 or URL
     createdAt: number;
 }
@@ -159,18 +161,28 @@ export interface NormRecipe {
     finishedAmount: number | null;
 
     references: string[]; // IDs of other recipes
+    sideDishes?: string[]; // Recommended side dishes extracted from text
     rawText: string;
     searchText: string;
     createdAt: number;
 }
 
-export interface NormChat {
+
+export interface ChatMessage {
+    id: string;
+    role: 'user' | 'assistant' | 'system';
+    content: string;
+    timestamp: number;
+    sources?: string[];
+}
+
+export interface ChatSession {
     id: string;
     userId: string;
-    question: string;
-    answer: string;
-    sourceRecipeIds: string[];
-    createdAt: number;
+    title: string;
+    lastMessage: string;
+    updatedAt: number;
+    messages: ChatMessage[];
 }
 
 export interface PollOption {

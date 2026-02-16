@@ -1,22 +1,26 @@
 import { NextResponse } from 'next/server';
-import { fetchCalendarEvents } from '@/lib/googleCalendar';
+import { listCalendarEvents } from '@/lib/googleCalendarAdmin';
 
 export const dynamic = 'force-dynamic'; // Disable static optimization
 
 export async function GET() {
     try {
-        const icalUrl = process.env.ICAL_URL;
-        if (!icalUrl) {
-            // Return mock data if no URL is configured (to avoid crashing)
-            return NextResponse.json({
-                events: [],
-                message: 'ICAL_URL not configured'
-            });
-        }
 
-        const events = await fetchCalendarEvents(icalUrl);
+        const googleEvents = await listCalendarEvents(30);
+
+        const events = googleEvents.map((e: any) => ({
+            id: e.id,
+            summary: e.summary,
+            description: e.description,
+            start: e.start.dateTime || e.start.date,
+            end: e.end.dateTime || e.end.date,
+            location: e.location,
+            allDay: !!e.start.date,
+            colorId: e.colorId
+        }));
+
         return NextResponse.json(events);
-    } catch (error) {
+    } catch (error: any) {
         console.error('API Error:', error);
         return NextResponse.json({ error: 'Failed to fetch events' }, { status: 500 });
     }

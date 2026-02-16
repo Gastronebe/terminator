@@ -16,6 +16,8 @@ export default function EditBirthdayPage() {
 
     const [name, setName] = useState('');
     const [date, setDate] = useState('');
+    const [nameDayDay, setNameDayDay] = useState('');
+    const [nameDayMonth, setNameDayMonth] = useState('');
     const [photo, setPhoto] = useState<File | null>(null);
     const [currentPhotoUrl, setCurrentPhotoUrl] = useState('');
     const [loading, setLoading] = useState(true);
@@ -34,6 +36,13 @@ export default function EditBirthdayPage() {
                     // Convert timestamp to YYYY-MM-DD
                     const isoDate = new Date(data.date).toISOString().split('T')[0];
                     setDate(isoDate);
+
+                    if (data.nameDayDate) {
+                        const nd = new Date(data.nameDayDate);
+                        setNameDayDay((nd.getDate()).toString());
+                        setNameDayMonth((nd.getMonth() + 1).toString());
+                    }
+
                     setCurrentPhotoUrl(data.photoUrl || '');
                 } else {
                     alert('Narozeniny nenalezeny');
@@ -74,14 +83,21 @@ export default function EditBirthdayPage() {
                 }
             }
 
+            let nameDayTimestamp = null;
+            if (nameDayDay && nameDayMonth) {
+                const nd = new Date(2000, parseInt(nameDayMonth) - 1, parseInt(nameDayDay));
+                nameDayTimestamp = nd.getTime();
+            }
+
             await updateDoc(doc(db, 'birthdays', id as string), {
                 name,
                 date: new Date(date).getTime(),
+                nameDayDate: nameDayTimestamp,
                 photoUrl,
                 updatedAt: Date.now()
             });
 
-            router.push('/birthdays');
+            router.push('/admin/birthdays');
         } catch (error) {
             console.error(error);
             alert('Chyba při ukládání');
@@ -120,6 +136,32 @@ export default function EditBirthdayPage() {
                                 style={{ padding: 12, borderRadius: 8, border: '1px solid #ddd', fontSize: 16 }}
                                 required
                             />
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                            <label style={{ fontSize: 14, fontWeight: 500, color: '#666' }}>Datum svátku (den a měsíc)</label>
+                            <div style={{ display: 'flex', gap: 10 }}>
+                                <select
+                                    value={nameDayDay}
+                                    onChange={e => setNameDayDay(e.target.value)}
+                                    style={{ flex: 1, padding: 12, borderRadius: 8, border: '1px solid #ddd', fontSize: 16 }}
+                                >
+                                    <option value="">Den</option>
+                                    {[...Array(31)].map((_, i) => (
+                                        <option key={i + 1} value={i + 1}>{i + 1}.</option>
+                                    ))}
+                                </select>
+                                <select
+                                    value={nameDayMonth}
+                                    onChange={e => setNameDayMonth(e.target.value)}
+                                    style={{ flex: 2, padding: 12, borderRadius: 8, border: '1px solid #ddd', fontSize: 16 }}
+                                >
+                                    <option value="">Měsíc</option>
+                                    {['Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen', 'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'].map((m, i) => (
+                                        <option key={i + 1} value={i + 1}>{m}</option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

@@ -8,6 +8,8 @@ import { usePathname } from 'next/navigation';
 import { calculateStatus } from '@/utils/status';
 import styles from './AssetList.module.css';
 
+import AddButton from '@/components/AddButton';
+
 export default function AssetList() {
     const pathname = usePathname();
     const isCar = pathname?.includes('cars');
@@ -26,9 +28,7 @@ export default function AssetList() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
                 <h1 className={styles.title} style={{ marginBottom: 0 }}>{title}</h1>
                 {isAdmin && (
-                    <Link href={`/admin/assets/new?type=${type}`} className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '14px' }}>
-                        + Přidat
-                    </Link>
+                    <AddButton href={`/admin/assets/new?type=${type}`} label={isCar ? 'Auta' : 'Nemovitosti'} />
                 )}
             </div>
             <div className={styles.grid}>

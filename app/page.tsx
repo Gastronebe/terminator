@@ -59,8 +59,8 @@ export default function Home() {
   const totalWarning = carStats.warning + propertyStats.warning + docStats.warning + subStats.warning;
   const totalActive = carStats.active + propertyStats.active + docStats.active + subStats.active;
 
-  // Birthday logic
-  const getNextBirthday = (date: number) => {
+  // Celebration logic (Birthdays & Name Days)
+  const getNextOccurrence = (date: number) => {
     const d = new Date(date);
     const today = new Date();
     const currentYear = today.getFullYear();
@@ -70,13 +70,38 @@ export default function Home() {
     return next;
   };
 
-  const nearestBirthday = birthdays.length > 0 ? birthdays.sort((a, b) => getNextBirthday(a.date).getTime() - getNextBirthday(b.date).getTime())[0] : null;
-  const birthdayDays = nearestBirthday ? differenceInCalendarDays(getNextBirthday(nearestBirthday.date), new Date()) : null;
+  const allCelebrations: any[] = [];
+  birthdays.forEach(b => {
+    // Add Birthday
+    allCelebrations.push({
+      id: `${b.id}-bday`,
+      name: b.name,
+      photoUrl: b.photoUrl,
+      date: getNextOccurrence(b.date),
+      type: 'birthday',
+      icon: '🎂'
+    });
+    // Add Name Day if exists
+    if (b.nameDayDate) {
+      allCelebrations.push({
+        id: `${b.id}-nday`,
+        name: b.name,
+        photoUrl: b.photoUrl,
+        date: getNextOccurrence(b.nameDayDate),
+        type: 'nameday',
+        icon: '🌸'
+      });
+    }
+  });
+
+  const sortedCelebrations = allCelebrations.sort((a, b) => a.date.getTime() - b.date.getTime());
+  const nearestCelebrations = sortedCelebrations.length > 0
+    ? sortedCelebrations.filter(c => differenceInCalendarDays(c.date, sortedCelebrations[0].date) === 0)
+    : [];
 
   // Event logic
   const nearestEvent = events && events.length > 0 ? events[0] : null;
   const eventDays = nearestEvent ? differenceInCalendarDays(new Date(nearestEvent.start), new Date()) : null;
-
 
   return (
     <main className="container">
@@ -113,21 +138,26 @@ export default function Home() {
           )}
         </DashboardWidget>
 
-        {/* Birthday Widget */}
-        <DashboardWidget title="Narozeniny" icon={Gift} color="var(--color-birthdays)" onClick={() => router.push('/birthdays')}>
-          {nearestBirthday ? (
+        {/* Celebrations Widget */}
+        <DashboardWidget title="Oslavy" icon={Gift} color="var(--color-birthdays)" onClick={() => router.push('/birthdays')}>
+          {nearestCelebrations.length > 0 ? (
             <div className={styles.birthdayContainer}>
-              <div className={styles.birthdayRow}>
-                {nearestBirthday.photoUrl && (
-                  <img src={nearestBirthday.photoUrl} alt={nearestBirthday.name} className={styles.birthdayPhoto} />
-                )}
-                <div>
-                  <div className={styles.widgetValue}>{nearestBirthday.name}</div>
-                  <div className={styles.widgetLabel}>
-                    {birthdayDays === 0 ? 'Dnes' : getNextBirthday(nearestBirthday.date).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'numeric' })}
+              {nearestCelebrations.map((cel, idx) => (
+                <div key={cel.id} className={styles.birthdayRow} style={{ marginTop: idx > 0 ? 8 : 0 }}>
+                  {cel.photoUrl && (
+                    <img src={cel.photoUrl} alt={cel.name} className={styles.birthdayPhoto} />
+                  )}
+                  <div>
+                    <div className={styles.widgetValue}>
+                      <span style={{ marginRight: 6 }}>{cel.icon}</span>
+                      {cel.name}
+                    </div>
+                    <div className={styles.widgetLabel}>
+                      {differenceInCalendarDays(cel.date, new Date()) === 0 ? 'Dnes' : cel.date.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'numeric' })}
+                    </div>
                   </div>
                 </div>
-              </div>
+              ))}
               <div className={styles.birthdayReminder}>
                 Už máš dárek? Pokud tě nikdo nepozval, připomeň se!
               </div>

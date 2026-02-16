@@ -6,7 +6,13 @@ import { Gift, Calendar, CreditCard, PieChart, FileText, ChevronLeft, ChefHat, C
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function MorePage() {
-    const { isAdmin } = useAuth();
+    const { isAdmin, user } = useAuth();
+
+    const hasPermission = (itemId: string) => {
+        if (itemId === 'admin') return isAdmin;
+        if (!user?.allowedMenuItems) return true; // Default to all if not set yet
+        return user.allowedMenuItems.includes(itemId);
+    };
 
     return (
         <main className="container">
@@ -22,63 +28,77 @@ export default function MorePage() {
                 gridTemplateColumns: '1fr 1fr',
                 gap: 16
             }}>
-                <Link href="/birthdays">
-                    <CategoryCard
-                        title="Narozeniny"
-                        description="Výročí"
-                        icon={Gift}
-                        color="var(--color-birthdays)"
-                    />
-                </Link>
-                <Link href="/events">
-                    <CategoryCard
-                        title="Události"
-                        description="Kalendář"
-                        icon={Calendar}
-                        color="var(--color-events)"
-                    />
-                </Link>
-                <Link href="/subscriptions">
-                    <CategoryCard
-                        title="Předplatné"
-                        description="Opakované platby"
-                        icon={CreditCard}
-                        color="var(--color-subscriptions)"
-                    />
-                </Link>
-                <Link href="/finance">
-                    <CategoryCard
-                        title="Statistiky"
-                        description="Přehled nákladů"
-                        icon={PieChart}
-                        color="var(--color-finance)"
-                    />
-                </Link>
-                <Link href="/documents">
-                    <CategoryCard
-                        title="Doklady"
-                        description="Osobní doklady"
-                        icon={FileText}
-                        color="var(--color-documents)"
-                    />
-                </Link>
-                <Link href="/norms">
-                    <CategoryCard
-                        title="Normy"
-                        description="Receptury (ČSN)"
-                        icon={ChefHat}
-                        color="#f97316" // Orange-500
-                    />
-                </Link>
-                <Link href="/camera">
-                    <CategoryCard
-                        title="Kamera"
-                        description="Online pohled"
-                        icon={Camera} // Will import
-                        color="#3b82f6" // Blue-500
-                    />
-                </Link>
-                {isAdmin && (
+                {hasPermission('birthdays') && (
+                    <Link href="/birthdays">
+                        <CategoryCard
+                            title="Narozeniny"
+                            description="Výročí"
+                            icon={Gift}
+                            color="var(--color-birthdays)"
+                        />
+                    </Link>
+                )}
+                {hasPermission('events') && (
+                    <Link href="/events">
+                        <CategoryCard
+                            title="Události"
+                            description="Kalendář"
+                            icon={Calendar}
+                            color="var(--color-events)"
+                        />
+                    </Link>
+                )}
+                {hasPermission('subscriptions') && (
+                    <Link href="/subscriptions">
+                        <CategoryCard
+                            title="Předplatné"
+                            description="Opakované platby"
+                            icon={CreditCard}
+                            color="var(--color-subscriptions)"
+                        />
+                    </Link>
+                )}
+                {hasPermission('finance') && (
+                    <Link href="/finance">
+                        <CategoryCard
+                            title="Statistiky"
+                            description="Přehled nákladů"
+                            icon={PieChart}
+                            color="var(--color-finance)"
+                        />
+                    </Link>
+                )}
+                {hasPermission('documents') && (
+                    <Link href="/documents">
+                        <CategoryCard
+                            title="Doklady"
+                            description="Osobní doklady"
+                            icon={FileText}
+                            color="var(--color-documents)"
+                        />
+                    </Link>
+                )}
+                {hasPermission('norms') && (
+                    <Link href="/norms">
+                        <CategoryCard
+                            title="Normy"
+                            description="Receptury (ČSN)"
+                            icon={ChefHat}
+                            color="#f97316" // Orange-500
+                        />
+                    </Link>
+                )}
+                {hasPermission('camera') && (
+                    <Link href="/camera">
+                        <CategoryCard
+                            title="Kamera"
+                            description="Online pohled"
+                            icon={Camera} // Will import
+                            color="#3b82f6" // Blue-500
+                        />
+                    </Link>
+                )}
+                {hasPermission('admin') && (
                     <Link href="/admin">
                         <CategoryCard
                             title="Administrace"

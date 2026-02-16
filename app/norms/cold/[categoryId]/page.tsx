@@ -47,7 +47,7 @@ export default function CategoryRecipesPage() {
     }, [categoryId]);
 
     const filteredRecipes = recipes.filter(r =>
-        r.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (r.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
         r.id.includes(searchTerm)
     );
 
@@ -93,7 +93,7 @@ export default function CategoryRecipesPage() {
                                     {recipe.yield}
                                 </div>
                             </div>
-                            <h3 className={styles.cardTitle}>{recipe.title}</h3>
+                            <h3 className={styles.cardTitle}>{recipe.title || 'Bez názvu'}</h3>
                             {recipe.portionInfo && (
                                 <span className={styles.portionInfo}>
                                     <Info size={10} />

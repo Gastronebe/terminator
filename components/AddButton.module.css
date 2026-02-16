@@ -1,0 +1,50 @@
+.addButton {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 48px;
+    height: 48px;
+    border-radius: 24px;
+    background: var(--accent-blue, #007AFF);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: none;
+    cursor: pointer;
+    z-index: 1000;
+    transition: all 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+    text-decoration: none;
+}
+
+.addButton:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 122, 255, 0.4);
+}
+
+.addButton:active {
+    transform: scale(0.95);
+}
+
+.label {
+    display: none;
+    margin-left: 8px;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+@media (min-width: 1024px) {
+    .addButton {
+        position: static;
+        width: auto;
+        height: 40px;
+        padding: 0 20px;
+        border-radius: 20px;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .label {
+        display: inline;
+    }
+}

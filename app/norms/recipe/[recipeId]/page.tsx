@@ -62,7 +62,7 @@ export default function RecipeDetailPage() {
                     )}
                 </div>
 
-                <h1 className={styles.mainTitle}>{recipe.title}</h1>
+                <h1 className={styles.mainTitle}>{recipe.title || 'Bez názvu'}</h1>
 
                 <div className={styles.yieldTags}>
                     <div className={`${styles.tag} ${styles.yieldTag}`}>
@@ -88,6 +88,21 @@ export default function RecipeDetailPage() {
                     {recipe.description || 'Popis není k dispozici.'}
                 </div>
             </section>
+
+            {/* Recommended Side Dishes */}
+            {recipe.sideDishes && recipe.sideDishes.length > 0 && (
+                <section className={styles.section}>
+                    <h2 className={styles.sectionTitle}>
+                        <Utensils size={20} className={styles.sectionIcon} />
+                        Doporučené přílohy
+                    </h2>
+                    <ul className={styles.sideDishesList}>
+                        {recipe.sideDishes.map((sd, i) => (
+                            <li key={i} className={styles.sideDishItem}>{sd}</li>
+                        ))}
+                    </ul>
+                </section>
+            )}
 
             {/* Ingredients Table */}
             <section className={styles.section}>

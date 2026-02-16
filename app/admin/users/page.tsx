@@ -8,6 +8,19 @@ import { Trash2, Edit2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import styles from './page.module.css';
 
+const MENU_ITEMS = [
+    { id: 'cars', label: 'Auta' },
+    { id: 'cards', label: 'Karty' },
+    { id: 'properties', label: 'Nemovitosti' },
+    { id: 'documents', label: 'Doklady' },
+    { id: 'events', label: 'Události' },
+    { id: 'norms', label: 'Normy' },
+    { id: 'finance', label: 'Statistiky' },
+    { id: 'camera', label: 'Kamera' },
+    { id: 'birthdays', label: 'Narozeniny' },
+    { id: 'subscriptions', label: 'Předplatné' },
+];
+
 export default function AdminUsersPage() {
     const { data: users, loading } = useUsers();
     const { user: currentUser } = useAuth();
@@ -19,6 +32,7 @@ export default function AdminUsersPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [role, setRole] = useState<'admin' | 'user'>('user');
+    const [allowedMenuItems, setAllowedMenuItems] = useState<string[]>(MENU_ITEMS.map(item => item.id));
     const [message, setMessage] = useState('');
 
     const handleCreateUser = async (e: React.FormEvent) => {
@@ -29,7 +43,7 @@ export default function AdminUsersPage() {
             const res = await fetch('/api/admin/users', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, password, role }),
+                body: JSON.stringify({ name, email, password, role, allowedMenuItems }),
             });
 
             const data = await res.json();
@@ -40,7 +54,7 @@ export default function AdminUsersPage() {
                 setEmail('');
                 setPassword('');
                 setIsCreating(false);
-                window.location.reload(); // Simple refresh for now
+                window.location.reload();
             } else {
                 setMessage(`Chyba: ${data.error}`);
             }
@@ -58,7 +72,7 @@ export default function AdminUsersPage() {
             const res = await fetch(`/api/admin/users/${editingUser.id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, role }),
+                body: JSON.stringify({ name, role, allowedMenuItems }),
             });
 
             if (res.ok) {
@@ -102,8 +116,34 @@ export default function AdminUsersPage() {
         setEditingUser(user);
         setName(user.name);
         setRole(user.role);
+        // If user doesn't have permissions defined yet, default to ALL checked
+        setAllowedMenuItems(user.allowedMenuItems || MENU_ITEMS.map(item => item.id));
         setIsCreating(false);
     };
+
+    const toggleMenuItem = (id: string) => {
+        setAllowedMenuItems(prev =>
+            prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+        );
+    };
+
+    const PermissionCheckboxes = () => (
+        <div className={styles.permissions}>
+            <label>Povolené položky menu:</label>
+            <div className={styles.permissionGrid}>
+                {MENU_ITEMS.map(item => (
+                    <label key={item.id} className={styles.checkboxLabel}>
+                        <input
+                            type="checkbox"
+                            checked={allowedMenuItems.includes(item.id)}
+                            onChange={() => toggleMenuItem(item.id)}
+                        />
+                        {item.label}
+                    </label>
+                ))}
+            </div>
+        </div>
+    );
 
     return (
         <AdminLayout>
@@ -136,6 +176,7 @@ export default function AdminUsersPage() {
                                 <option value="admin">Administrátor</option>
                             </select>
                         </div>
+                        <PermissionCheckboxes />
                         <div className={styles.actions}>
                             <button type="submit" className="btn btn-primary">Vytvořit</button>
                             <button type="button" className="btn btn-secondary" onClick={() => setIsCreating(false)}>Zrušit</button>
@@ -159,7 +200,8 @@ export default function AdminUsersPage() {
                                 <option value="admin">Administrátor</option>
                             </select>
                         </div>
-                        <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Email ({editingUser.email}) nelze měnit.</p>
+                        <PermissionCheckboxes />
+                        <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: 8 }}>Email ({editingUser.email}) nelze měnit.</p>
                         <div className={styles.actions}>
                             <button type="submit" className="btn btn-primary">Uložit změny</button>
                             <button type="button" className="btn btn-secondary" onClick={() => setEditingUser(null)}>Zrušit</button>
@@ -171,7 +213,7 @@ export default function AdminUsersPage() {
 
             <div className={styles.grid}>
                 {users.map(user => (
-                    <Card key={user.createdAt + user.email} className={styles.userCard}>
+                    <Card key={user.id || user.email} className={styles.userCard}>
                         <div className={styles.userCardHeader}>
                             <div className={styles.userInfo}>
                                 <h3>{user.name}</h3>

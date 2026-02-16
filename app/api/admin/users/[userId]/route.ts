@@ -31,7 +31,7 @@ export async function PATCH(
 ) {
     try {
         const { userId } = await params;
-        const { name, role } = await req.json();
+        const { name, role, allowedMenuItems } = await req.json();
 
         if (!userId) {
             return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
@@ -41,6 +41,7 @@ export async function PATCH(
         const updateData: any = {};
         if (name) updateData.name = name;
         if (role) updateData.role = role;
+        if (allowedMenuItems) updateData.allowedMenuItems = allowedMenuItems;
 
         await adminDb.collection('users').doc(userId).update(updateData);
 

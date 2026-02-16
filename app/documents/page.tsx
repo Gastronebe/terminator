@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { deleteDoc, doc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { ChevronLeft, Plus, Trash2, FileText, User } from 'lucide-react';
+import AddButton from '@/components/AddButton';
 
 export default function DocumentsPage() {
     const { data: documents, loading } = useDocuments();
@@ -35,10 +36,7 @@ export default function DocumentsPage() {
             <div className={styles.headerRow}>
                 <h1 className={styles.title}>Osobní doklady</h1>
                 {isAdmin && (
-                    <Link href="/admin/documents/new" className={styles.addBtn}>
-                        <Plus size={20} />
-                        Doklad
-                    </Link>
+                    <AddButton href="/admin/documents/new" label="Doklad" />
                 )}
             </div>
 

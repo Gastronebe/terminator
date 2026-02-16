@@ -105,3 +105,36 @@
     color: var(--accent-blue);
     margin: 0;
 }
+
+.permissions {
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+.permissions label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.permissionGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: normal !important;
+    cursor: pointer;
+}
+
+.checkboxLabel input {
+    cursor: pointer;
+}
