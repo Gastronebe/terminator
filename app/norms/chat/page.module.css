@@ -122,12 +122,34 @@
     border: 1px solid rgba(0, 0, 0, 0.05);
     color: var(--text-primary);
     border-top-left-radius: 0;
+    line-height: 1.6;
+}
+
+.inlineSourceLink {
+    display: inline-block;
+    color: #4f46e5;
+    background-color: #f3f4f6;
+    padding: 0px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-decoration: none;
+    margin: 2px 2px;
+    border: 1px solid rgba(79, 70, 229, 0.2);
+    transition: all 0.2s;
+    font-size: 0.85em;
+    vertical-align: middle;
+}
+
+.inlineSourceLink:hover {
+    background-color: #4f46e5;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .sources {
-    margin-top: 0.75rem;
+    margin-top: 1rem;
     padding-top: 0.75rem;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-top: 1px dashed rgba(0, 0, 0, 0.1);
     font-size: 0.75rem;
     color: var(--text-secondary);
 }

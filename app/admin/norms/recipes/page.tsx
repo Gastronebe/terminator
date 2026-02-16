@@ -155,7 +155,9 @@ export default function RecipesAdminPage() {
                     <option value="unknown">Nezařazené / Chyba (Unknown)</option>
                     <hr />
                     {categories.map(c => (
-                        <option key={c.id} value={c.id}>{c.id} - {c.name}</option>
+                        <option key={c.id} value={c.id}>
+                            {c.id} - {c.name} ({c.source === 'cold' ? 'Studená' : 'Teplá'})
+                        </option>
                     ))}
                 </select>
             </div>

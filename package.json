@@ -6,7 +6,8 @@
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "export:cold": "npx tsx scripts/export-cold-norms.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -22,6 +23,7 @@
     "react-dom": "19.2.3"
   },
   "devDependencies": {
+    "@types/dotenv": "^6.1.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

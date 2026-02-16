@@ -144,7 +144,28 @@ export default function ChatPage() {
                             </span>
 
                             <div className={`${styles.messageBubble} ${msg.role === 'user' ? styles.userBubble : styles.botBubble}`}>
-                                {msg.content}
+                                {msg.role === 'user' ? (
+                                    msg.content
+                                ) : (
+                                    msg.content.split(/(\[ZDROJ:\s*\d+[^\]]*\])/gi).map((part, i) => {
+                                        const match = part.match(/\[ZDROJ:\s*(\d+)([^\]]*)\]/i);
+                                        if (match) {
+                                            const id = match[1];
+                                            const name = match[2].trim();
+                                            return (
+                                                <Link
+                                                    key={i}
+                                                    href={`/norms/recipe/${id}`}
+                                                    className={styles.inlineSourceLink}
+                                                    title={`Přejít na recept: ${name}`}
+                                                >
+                                                    [Norma č. {id} {name}]
+                                                </Link>
+                                            );
+                                        }
+                                        return part;
+                                    })
+                                )}
 
                                 {/* Sources */}
                                 {msg.role === 'assistant' && msg.sources && msg.sources.length > 0 && (

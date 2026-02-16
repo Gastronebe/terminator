@@ -22,9 +22,8 @@ export default function NormsPage() {
                     </p>
                 </Link>
 
-                {/* Cold Kitchen - Placeholder */}
-                <div className={`${styles.card} ${styles.disabledCard}`}>
-                    <div className={styles.badge}>JIŽ BRZY</div>
+                {/* Cold Kitchen */}
+                <Link href="/norms/cold" className={styles.card}>
                     <div className={`${styles.iconWrapper} ${styles.coldWrapper}`}>
                         <Snowflake size={32} />
                     </div>
@@ -32,7 +31,7 @@ export default function NormsPage() {
                     <p className={styles.cardDescription}>
                         Normy studené kuchyně pro přípravu salátů, pomazánek a studených mís.
                     </p>
-                </div>
+                </Link>
 
                 {/* Chat */}
                 <Link href="/norms/chat" className={`${styles.card} ${styles.chatCard}`}>

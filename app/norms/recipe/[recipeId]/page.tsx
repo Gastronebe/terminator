@@ -45,7 +45,10 @@ export default function RecipeDetailPage() {
         <main className={`container ${styles.container}`}>
             {/* Header */}
             <div className={styles.navSection}>
-                <Link href={`/norms/hot/${recipe.categoryId}`} className={styles.backLink}>
+                <Link
+                    href={recipe.source === 'cold' ? `/norms/cold/${recipe.categoryId}` : `/norms/hot/${recipe.categoryId}`}
+                    className={styles.backLink}
+                >
                     <ArrowLeft size={16} />
                     <span>Zpět na {recipe.categoryName}</span>
                 </Link>
