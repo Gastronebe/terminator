@@ -172,3 +172,19 @@ export interface NormChat {
     sourceRecipeIds: string[];
     createdAt: number;
 }
+
+export interface PollOption {
+    id: string;
+    text: string;
+    votes: number;
+}
+
+export interface Poll {
+    id: string;
+    question: string;
+    options: PollOption[];
+    active: boolean;
+    createdAt: number;
+    createdBy?: string;
+    totalVotes?: number; // Aggregated for easier display
+}

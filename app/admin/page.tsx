@@ -44,6 +44,14 @@ export default function AdminPage() {
                         color="#333"
                     />
                 </Link>
+                <Link href="/admin/polls">
+                    <CategoryCard
+                        title="Ankety"
+                        description="Co budeme vařit?"
+                        icon={Gift} // Using Gift as placeholder, ideally 'Vote' or similar if available
+                        color="#ec4899" // Pink-500
+                    />
+                </Link>
             </div>
         </AdminLayout>
     );

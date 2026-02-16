@@ -8,6 +8,7 @@ import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import StatusCard from "@/components/StatusCard";
 import DashboardWidget from "@/components/DashboardWidget";
+import PollWidget from "@/components/PollWidget";
 import styles from "./page.module.css";
 /* Removed ImportantEventsWidget import as logic moves here or to a new wrapper */
 /* Actually, let's keep logic inline or use a custom component if needed. 
@@ -132,11 +133,8 @@ export default function Home() {
           )}
         </DashboardWidget>
 
-        {/* Cooking Widget */}
-        <DashboardWidget title="Vaření" icon={ChefHat} color="#FF9500" onClick={() => alert('Anketa již brzy!')}>
-          <div className={styles.widgetValue}>Co budeme vařit?</div>
-          <div className={styles.widgetLabel}>Anketa již brzy</div>
-        </DashboardWidget>
+        {/* Cooking Widget (Poll) */}
+        <PollWidget />
       </section>
 
     </main>
