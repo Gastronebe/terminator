@@ -116,12 +116,22 @@ export default function Home() {
         {/* Birthday Widget */}
         <DashboardWidget title="Narozeniny" icon={Gift} color="var(--color-birthdays)" onClick={() => router.push('/birthdays')}>
           {nearestBirthday ? (
-            <>
-              <div className={styles.widgetValue}>{nearestBirthday.name}</div>
-              <div className={styles.widgetLabel}>
-                {birthdayDays === 0 ? 'Dnes' : getNextBirthday(nearestBirthday.date).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'numeric' })}
+            <div className={styles.birthdayContainer}>
+              <div className={styles.birthdayRow}>
+                {nearestBirthday.photoUrl && (
+                  <img src={nearestBirthday.photoUrl} alt={nearestBirthday.name} className={styles.birthdayPhoto} />
+                )}
+                <div>
+                  <div className={styles.widgetValue}>{nearestBirthday.name}</div>
+                  <div className={styles.widgetLabel}>
+                    {birthdayDays === 0 ? 'Dnes' : getNextBirthday(nearestBirthday.date).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'numeric' })}
+                  </div>
+                </div>
               </div>
-            </>
+              <div className={styles.birthdayReminder}>
+                Už máš dárek? Pokud tě nikdo nepozval, připomeň se!
+              </div>
+            </div>
           ) : (
             <div className={styles.widgetValue} style={{ color: '#aaa' }}>-</div>
           )}

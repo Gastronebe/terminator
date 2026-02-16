@@ -72,3 +72,30 @@
     grid-template-columns: 1fr 1fr 1fr;
   }
 }
+
+.birthdayRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.birthdayPhoto {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.birthdayReminder {
+  font-size: 10px;
+  color: #ef4444;
+  /* color-danger */
+  font-weight: 600;
+  margin-top: 6px;
+  font-style: italic;
+  line-height: 1.3;
+  opacity: 0.9;
+}
