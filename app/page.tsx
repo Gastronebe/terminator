@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import StatusCard from "@/components/StatusCard";
 import DashboardWidget from "@/components/DashboardWidget";
 import PollWidget from "@/components/PollWidget";
+import { differenceInCalendarDays } from 'date-fns';
 import styles from "./page.module.css";
 /* Removed ImportantEventsWidget import as logic moves here or to a new wrapper */
 /* Actually, let's keep logic inline or use a custom component if needed. 
@@ -70,18 +71,11 @@ export default function Home() {
   };
 
   const nearestBirthday = birthdays.length > 0 ? birthdays.sort((a, b) => getNextBirthday(a.date).getTime() - getNextBirthday(b.date).getTime())[0] : null;
-  const birthdayDays = nearestBirthday ? Math.ceil((getNextBirthday(nearestBirthday.date).getTime() - new Date().setHours(0, 0, 0, 0)) / 86400000) : null;
+  const birthdayDays = nearestBirthday ? differenceInCalendarDays(getNextBirthday(nearestBirthday.date), new Date()) : null;
 
   // Event logic
   const nearestEvent = events && events.length > 0 ? events[0] : null;
-
-  const getEventDays = (dateStr: string) => {
-    const d = new Date(dateStr);
-    const now = new Date();
-    now.setHours(0, 0, 0, 0);
-    return Math.ceil((d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-  };
-  const eventDays = nearestEvent ? getEventDays(nearestEvent.start) : null;
+  const eventDays = nearestEvent ? differenceInCalendarDays(new Date(nearestEvent.start), new Date()) : null;
 
 
   return (
@@ -111,7 +105,7 @@ export default function Home() {
             <>
               <div className={styles.widgetValue}>{nearestEvent.summary}</div>
               <div className={styles.widgetLabel}>
-                {eventDays === 0 ? 'Dnes' : eventDays === 1 ? 'Zítra' : `Za ${eventDays} dní`}
+                {eventDays === 0 ? 'Dnes' : new Date(nearestEvent.start).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'numeric' })}
               </div>
             </>
           ) : (
@@ -125,7 +119,7 @@ export default function Home() {
             <>
               <div className={styles.widgetValue}>{nearestBirthday.name}</div>
               <div className={styles.widgetLabel}>
-                {birthdayDays === 0 ? 'Dnes' : birthdayDays === 1 ? 'Zítra' : `Za ${birthdayDays} dní`}
+                {birthdayDays === 0 ? 'Dnes' : getNextBirthday(nearestBirthday.date).toLocaleDateString('cs-CZ', { day: 'numeric', month: 'numeric' })}
               </div>
             </>
           ) : (
