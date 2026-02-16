@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Car, FileText, PieChart, Menu, Calendar, CreditCard, Home as HomeIcon } from 'lucide-react';
+import { Home, Car, FileText, PieChart, Menu, Calendar, CreditCard, Home as HomeIcon, ChefHat } from 'lucide-react';
 import styles from './Sidebar.module.css';
 
 export default function Sidebar() {
@@ -40,6 +40,10 @@ export default function Sidebar() {
                 <Link href="/events" className={`${styles.navItem} ${isActive('/events') ? styles.active : ''}`}>
                     <Calendar size={20} />
                     <span>Události</span>
+                </Link>
+                <Link href="/norms" className={`${styles.navItem} ${isActive('/norms') ? styles.active : ''}`}>
+                    <ChefHat size={20} />
+                    <span>Normy</span>
                 </Link>
                 <Link href="/finance" className={`${styles.navItem} ${isActive('/finance') ? styles.active : ''}`}>
                     <PieChart size={20} />

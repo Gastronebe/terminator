@@ -1,0 +1,124 @@
+.container {
+    padding-bottom: 6rem;
+}
+
+.heading {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.card {
+    background: var(--surface);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    color: inherit;
+    text-decoration: none;
+}
+
+.card:hover {
+    background-color: #fafafa;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.iconWrapper {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.cardTitle {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.cardDescription {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+/* Modifiers for specific cards */
+.hotWrapper {
+    background-color: #ffedd5;
+    /* orange-100 */
+    color: #ea580c;
+    /* orange-600 */
+}
+
+.coldWrapper {
+    background-color: #dbeafe;
+    /* blue-100 */
+    color: #2563eb;
+    /* blue-600 */
+}
+
+.chatWrapper {
+    background-color: #e0e7ff;
+    /* indigo-100 */
+    color: #4f46e5;
+    /* indigo-600 */
+}
+
+.chatCard {
+    background: linear-gradient(to bottom right, #eef2ff, #f3e8ff);
+    border-color: #e0e7ff;
+}
+
+.chatTitle {
+    color: #312e81;
+    /* indigo-900 */
+}
+
+.chatDesc {
+    color: #4338ca;
+    /* indigo-700 */
+}
+
+.disabledCard {
+    opacity: 0.6;
+    filter: grayscale(100%);
+    cursor: not-allowed;
+    position: relative;
+    overflow: hidden;
+    background-color: #f9fafb;
+}
+
+.badge {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background-color: #e5e7eb;
+    color: #6b7280;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-weight: 700;
+}

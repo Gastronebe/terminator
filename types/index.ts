@@ -116,3 +116,59 @@ export interface DiscountCard {
     codeImageUrl?: string; // Base64
     createdAt?: number;
 }
+
+// --- Gastronomic Norms (Recipes) ---
+
+export interface NormCategory {
+    id: string; // "101", "110"
+    name: string; // "Bílé polévky"
+    parentGroup: string; // "Polévky"
+    source: 'hot' | 'cold';
+    order: number;
+    recipeCount: number;
+}
+
+export interface NormIngredient {
+    name: string;
+    gross: number | null;
+    waste: number | null;
+    net: number | null;
+    note: string | null;
+}
+
+export interface NormRecipe {
+    id: string; // "10101"
+    title: string; // "Vývar B"
+    categoryId: string; // "101"
+    categoryName: string; // "Bílé polévky"
+    parentGroup: string; // "Polévky"
+    source: 'hot' | 'cold';
+
+    description: string;
+    procedure: string;
+
+    ingredients: NormIngredient[];
+
+    yield: string; // "3 litry"
+    portionInfo: string | null;
+    isMinutka: boolean;
+
+    totalGross: number | null;
+    totalNet: number | null;
+    losses: number | null;
+    finishedAmount: number | null;
+
+    references: string[]; // IDs of other recipes
+    rawText: string;
+    searchText: string;
+    createdAt: number;
+}
+
+export interface NormChat {
+    id: string;
+    userId: string;
+    question: string;
+    answer: string;
+    sourceRecipeIds: string[];
+    createdAt: number;
+}

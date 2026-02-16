@@ -2,7 +2,7 @@
 
 import CategoryCard from '@/components/CategoryCard';
 import Link from 'next/link';
-import { Gift, Calendar, CreditCard, PieChart, FileText, ChevronLeft } from 'lucide-react';
+import { Gift, Calendar, CreditCard, PieChart, FileText, ChevronLeft, ChefHat } from 'lucide-react';
 
 export default function MorePage() {
     return (
@@ -57,6 +57,14 @@ export default function MorePage() {
                         description="Osobní doklady"
                         icon={FileText}
                         color="var(--color-documents)"
+                    />
+                </Link>
+                <Link href="/norms">
+                    <CategoryCard
+                        title="Normy"
+                        description="Receptury (ČSN)"
+                        icon={ChefHat}
+                        color="#f97316" // Orange-500
                     />
                 </Link>
             </div>
