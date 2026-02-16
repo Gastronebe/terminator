@@ -17,10 +17,32 @@ export default function HotKitchenPage() {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                // Fetch all categories for hot kitchen
+                // 1. Fetch Categories
                 const q = query(collection(db, 'normCategories'), where('source', '==', 'hot'), orderBy('order'));
                 const querySnapshot = await getDocs(q);
-                const cats = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as NormCategory));
+                let cats = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as NormCategory));
+
+                // 2. Fetch All Recipes (for accurate counts)
+                // Optimization: In a huge app, we'd use aggregation queries or cloud functions.
+                // For < 2000 items, client-side counting is acceptable and robust.
+                const qRecipes = query(collection(db, 'normRecipes')); // We could filter by source='hot' but categoryId check is safer
+                const recipeSnap = await getDocs(qRecipes);
+
+                const counts: Record<string, number> = {};
+                recipeSnap.docs.forEach(doc => {
+                    const data = doc.data();
+                    const catId = String(data.categoryId).trim();
+                    if (catId) {
+                        counts[catId] = (counts[catId] || 0) + 1;
+                    }
+                });
+
+                // 3. Merge counts
+                cats = cats.map(c => ({
+                    ...c,
+                    recipeCount: counts[c.id] || 0
+                }));
+
                 setCategories(cats);
             } catch (error) {
                 console.error('Error fetching categories:', error);

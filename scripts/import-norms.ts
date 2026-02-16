@@ -78,7 +78,7 @@ async function parseAndImport() {
         const trimmed = line.trim();
 
         // Detect Main Group (simplified heuristic: All caps, not a recipe, not a page number)
-        if (GROUP_REGEX.test(trimmed) && !trimmed.match(/^\d/) && trimmed.length > 3 && !trimmed.includes('STRANA')) {
+        if (GROUP_REGEX.test(trimmed) && !trimmed.match(/^\d/) && trimmed.length > 3 && !trimmed.includes('STRANA') && !trimmed.includes('SEZNAM') && !trimmed.includes('OBSAH')) {
             currentGroup = trimmed;
             console.log(`Found Group: ${currentGroup}`);
             continue;
@@ -86,7 +86,7 @@ async function parseAndImport() {
 
         // Detect Category
         const catMatch = trimmed.match(CATEGORY_REGEX);
-        if (catMatch) {
+        if (catMatch && !trimmed.includes('.....')) {
             const [_, id, name] = catMatch;
             currentCategory = {
                 id,
@@ -141,24 +141,38 @@ async function parseAndImport() {
 }
 
 async function processRecipe(rawText: string, categoryId?: string, parentGroup?: string, categoryName?: string) {
-    if (!process.env.GEMINI_API_KEY) {
-        console.warn('Skipping AI parsing (No API Key)');
-        return;
-    }
-
     // Basic extraction to get ID for logging
     const idMatch = rawText.match(/^(\d{5})/);
     const id = idMatch ? idMatch[1] : 'unknown';
 
-    // Check if exists to avoid re-processing
     const docRef = db.collection('normRecipes').doc(id);
     const docSnap = await docRef.get();
+
+    // 1. If recipe exists and is valid, only update metadata (category, etc.)
     if (docSnap.exists) {
-        // console.log(`Skipping existing recipe ${id}`);
-        return;
+        const data = docSnap.data();
+        if (!data?.parsingError) {
+            // Update metadata if changed (e.g. if we fixed category parsing)
+            if (data?.categoryId !== categoryId || data?.parentGroup !== parentGroup) {
+                await docRef.update({
+                    categoryId: categoryId || 'unknown',
+                    categoryName: categoryName || 'unknown',
+                    parentGroup: parentGroup || 'unknown',
+                    updatedAt: Date.now()
+                });
+                // console.log(`Updated metadata for ${id}`);
+            }
+            return;
+        }
+        console.log(`Retrying failed recipe ${id}...`);
+    } else {
+        console.log(`Processing new recipe ${id}...`);
     }
 
-    console.log(`Processing recipe ${id}...`);
+    if (!process.env.GEMINI_API_KEY) {
+        console.warn('Skipping AI parsing (No API Key)');
+        return;
+    }
 
     const prompt = `
     Extrahuj z tohoto textu českou gastronomickou recepturu do JSON.
@@ -189,12 +203,14 @@ async function processRecipe(rawText: string, categoryId?: string, parentGroup?:
     `;
 
     try {
+        // Sleep to avoid rate limits (simple backoff)
+        await new Promise(r => setTimeout(r, 2000));
+
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const text = response.text();
 
         let jsonStr = text.replace(/```json/g, '').replace(/```/g, '');
-        // Sometimes Gemini returns text before JSON
         const firstBrace = jsonStr.indexOf('{');
         const lastBrace = jsonStr.lastIndexOf('}');
         if (firstBrace !== -1 && lastBrace !== -1) {
@@ -203,7 +219,6 @@ async function processRecipe(rawText: string, categoryId?: string, parentGroup?:
 
         const data = JSON.parse(jsonStr);
 
-        // Enhance with metadata
         const fullData = {
             ...data,
             categoryId: categoryId || 'unknown',
@@ -212,22 +227,24 @@ async function processRecipe(rawText: string, categoryId?: string, parentGroup?:
             source: 'hot',
             rawText: rawText,
             searchText: [data.title, data.id, data.description, categoryName].join(' ').toLowerCase(),
-            createdAt: Date.now()
+            createdAt: Date.now(),
+            parsingError: false // Clear error flag
         };
 
-        // Save to Firestore
         await db.collection('normRecipes').doc(data.id).set(fullData);
         console.log(`Saved recipe ${data.id}`);
 
     } catch (e) {
-        console.error(`Failed to parse recipe ${id}:`, e);
-        // Fallback: Save minimal data
+        console.error(`Failed to parse recipe ${id}:`, e); // Log minimal error
+        // Fallback: Save minimal data if not exists, or update error flag
         await db.collection('normRecipes').doc(id).set({
             id,
             rawText,
             parsingError: true,
-            createdAt: Date.now()
-        });
+            createdAt: Date.now(),
+            categoryId: categoryId || 'unknown',
+            categoryName: categoryName || 'unknown'
+        }, { merge: true });
     }
 }
 
