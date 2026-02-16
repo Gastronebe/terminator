@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Car, FileText, PieChart, Menu, Calendar, CreditCard, Home as HomeIcon, ChefHat } from 'lucide-react';
+import { Home, Car, FileText, PieChart, Menu, Calendar, CreditCard, Home as HomeIcon, ChefHat, Camera } from 'lucide-react';
 import styles from './Sidebar.module.css';
 
 export default function Sidebar() {
@@ -48,6 +48,10 @@ export default function Sidebar() {
                 <Link href="/finance" className={`${styles.navItem} ${isActive('/finance') ? styles.active : ''}`}>
                     <PieChart size={20} />
                     <span>Statistiky</span>
+                </Link>
+                <Link href="/camera" className={`${styles.navItem} ${isActive('/camera') ? styles.active : ''}`}>
+                    <Camera size={20} />
+                    <span>Kamera</span>
                 </Link>
             </nav>
         </aside>

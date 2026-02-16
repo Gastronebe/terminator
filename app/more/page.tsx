@@ -2,7 +2,7 @@
 
 import CategoryCard from '@/components/CategoryCard';
 import Link from 'next/link';
-import { Gift, Calendar, CreditCard, PieChart, FileText, ChevronLeft, ChefHat } from 'lucide-react';
+import { Gift, Calendar, CreditCard, PieChart, FileText, ChevronLeft, ChefHat, Camera } from 'lucide-react';
 
 export default function MorePage() {
     return (
@@ -65,6 +65,14 @@ export default function MorePage() {
                         description="Receptury (ČSN)"
                         icon={ChefHat}
                         color="#f97316" // Orange-500
+                    />
+                </Link>
+                <Link href="/camera">
+                    <CategoryCard
+                        title="Kamera"
+                        description="Online pohled"
+                        icon={Camera} // Will import
+                        color="#3b82f6" // Blue-500
                     />
                 </Link>
             </div>
