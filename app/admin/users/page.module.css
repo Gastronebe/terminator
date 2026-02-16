@@ -31,6 +31,77 @@
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+.userCard {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.userCardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.userInfo h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.userInfo p {
+    margin: 4px 0 0 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+.userActions {
+    display: flex;
+    gap: 8px;
+}
+
+.actionBtn {
+    padding: 6px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.actionBtn:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--accent-blue);
+}
+
+.deleteBtn:hover {
+    color: var(--color-danger, #ef4444);
+    background: #fee2e2;
+}
+
+.cardFooter {
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.message {
+    font-size: 0.9rem;
+    color: var(--accent-blue);
+    margin: 0;
 }

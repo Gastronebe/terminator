@@ -33,14 +33,12 @@ export async function fetchCalendarEvents(icalUrl: string): Promise<CalendarEven
         vevents.forEach((vevent: any) => {
             const event = new ICAL.Event(vevent);
 
-            // Skip recurring expansion for now, just take the base event
-            // ical.js handles simple events well. 
-            // For recurring, we'd need an iterator, but let's stick to simple first.
-
             const startDate = event.startDate.toJSDate();
             const endDate = event.endDate.toJSDate();
 
             if (startDate && endDate) {
+                // For all-day events, the end date in iCal is usually the next day at 00:00
+                // but let's keep the raw dates and handle normalization in the UI.
                 events.push({
                     id: event.uid,
                     summary: event.summary,

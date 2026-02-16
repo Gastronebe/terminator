@@ -38,7 +38,7 @@ export default function NormsPage() {
                     <div className={`${styles.iconWrapper} ${styles.chatWrapper}`}>
                         <MessageSquare size={32} />
                     </div>
-                    <h2 className={`${styles.cardTitle} ${styles.chatTitle}`}>Zeptat se norem</h2>
+                    <h2 className={`${styles.cardTitle} ${styles.chatTitle}`}>Zeptat se Svatopluka</h2>
                     <p className={`${styles.cardDescription} ${styles.chatDesc}`}>
                         Inteligentní asistent, který zná celou knihu norem.
                         Umí vyhledávat i přepočítávat porce.

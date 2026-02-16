@@ -4,6 +4,7 @@ import { useCalendarEvents } from '@/hooks/useData';
 import Card from '@/components/Card';
 import Link from 'next/link';
 import { Calendar } from 'lucide-react';
+import { differenceInCalendarDays } from 'date-fns';
 
 export default function EventsPage() {
     const { data: events, loading, error } = useCalendarEvents();
@@ -21,7 +22,7 @@ export default function EventsPage() {
                 {events.map((event, index) => {
                     const date = new Date(event.start);
                     const now = new Date();
-                    const diffDays = Math.ceil((date.getTime() - now.setHours(0, 0, 0, 0)) / (1000 * 60 * 60 * 24));
+                    const diffDays = differenceInCalendarDays(date, now);
 
                     let status = 'active';
                     if (diffDays <= 3) status = 'expired';

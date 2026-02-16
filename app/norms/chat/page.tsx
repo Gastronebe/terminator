@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Mic, Volume2, User, Bot, StopCircle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import styles from './page.module.css';
 
 interface Message {
@@ -14,7 +16,7 @@ interface Message {
 
 export default function ChatPage() {
     const [messages, setMessages] = useState<Message[]>([
-        { id: 'welcome', role: 'assistant', content: 'Dobrý den, jsem váš asistent pro gastronomické normy teplých pokrmů (ČSN 1986). Zeptejte se mě na recept, technologický postup nebo přepočet surovin.' }
+        { id: 'welcome', role: 'assistant', content: 'Ahoj, jmenuju se Sváťa a rád ti poradím. Zeptej se mě na cokoliv.' }
     ]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
@@ -122,9 +124,9 @@ export default function ChatPage() {
                 <div className={styles.titleArea}>
                     <h1>
                         <Bot className="text-indigo-600" />
-                        Zeptat se norem
+                        Zeptat se Svatopluka
                     </h1>
-                    <p className={styles.subtitle}>AI asistent (ČSN 1986)</p>
+                    <p className={styles.subtitle}>AI asistent (Sváťa Kuřátko)</p>
                 </div>
             </div>
 
@@ -140,31 +142,43 @@ export default function ChatPage() {
                         {/* Content */}
                         <div className={`${styles.messageContentWrapper} ${msg.role === 'user' ? styles.userContentWrapper : ''}`}>
                             <span className={styles.senderName}>
-                                {msg.role === 'user' ? 'Vy' : 'Asistent (ČSN 1986)'}
+                                {msg.role === 'user' ? 'Vy' : 'Sváťa Kuřátko'}
                             </span>
 
                             <div className={`${styles.messageBubble} ${msg.role === 'user' ? styles.userBubble : styles.botBubble}`}>
                                 {msg.role === 'user' ? (
                                     msg.content
                                 ) : (
-                                    msg.content.split(/(\[ZDROJ:\s*\d+[^\]]*\])/gi).map((part, i) => {
-                                        const match = part.match(/\[ZDROJ:\s*(\d+)([^\]]*)\]/i);
-                                        if (match) {
-                                            const id = match[1];
-                                            const name = match[2].trim();
-                                            return (
-                                                <Link
-                                                    key={i}
-                                                    href={`/norms/recipe/${id}`}
-                                                    className={styles.inlineSourceLink}
-                                                    title={`Přejít na recept: ${name}`}
-                                                >
-                                                    [Norma č. {id} {name}]
-                                                </Link>
-                                            );
-                                        }
-                                        return part;
-                                    })
+                                    <ReactMarkdown
+                                        remarkPlugins={[remarkGfm]}
+                                        components={{
+                                            p: ({ children }: { children: React.ReactNode }) => <p className={styles.mdParagraph}>{children}</p>,
+                                            table: ({ children }: { children: React.ReactNode }) => <div className={styles.tableWrapper}><table>{children}</table></div>,
+                                            text: ({ value }: { value: string }) => {
+                                                if (!value) return null;
+                                                return value.split(/(\[ZDROJ:\s*\d+[^\]]*\])/gi).map((part, i) => {
+                                                    const match = part.match(/\[ZDROJ:\s*(\d+)([^\]]*)\]/i);
+                                                    if (match) {
+                                                        const id = match[1];
+                                                        const name = match[2].trim();
+                                                        return (
+                                                            <Link
+                                                                key={i}
+                                                                href={`/norms/recipe/${id}`}
+                                                                className={styles.inlineSourceLink}
+                                                                title={`Přejít na recept: ${name}`}
+                                                            >
+                                                                [Norma č. {id} {name}]
+                                                            </Link>
+                                                        );
+                                                    }
+                                                    return part;
+                                                });
+                                            }
+                                        } as any}
+                                    >
+                                        {msg.content}
+                                    </ReactMarkdown>
                                 )}
 
                                 {/* Sources */}

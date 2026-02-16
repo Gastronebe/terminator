@@ -3,6 +3,7 @@
 import { useCalendarEvents } from '@/hooks/useData';
 import styles from '@/app/page.module.css'; // Reusing dashboard styles
 import { Calendar } from 'lucide-react';
+import { differenceInCalendarDays } from 'date-fns';
 
 export default function ImportantEventsWidget() {
     const { data: events, loading } = useCalendarEvents();
@@ -14,9 +15,8 @@ export default function ImportantEventsWidget() {
     const now = new Date();
     const eventDate = new Date(nearestEvent.start);
 
-    // Calculate days until
-    const diffTime = eventDate.getTime() - now.setHours(0, 0, 0, 0);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    // Calculate days until using calendar days to ignore time-of-day shifts
+    const diffDays = differenceInCalendarDays(eventDate, now);
 
     // Logic for color/urgency
     const isUrgent = diffDays <= 3;

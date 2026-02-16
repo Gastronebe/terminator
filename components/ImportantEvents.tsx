@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Card from '@/components/Card';
 import Link from 'next/link';
 import { Calendar } from 'lucide-react';
+import { differenceInCalendarDays } from 'date-fns';
 import styles from './ImportantEvents.module.css';
 
 interface CalendarEvent {
@@ -58,7 +59,7 @@ export default function ImportantEvents() {
     if (events.length > 0) {
         const nearest = new Date(events[0].start);
         const now = new Date();
-        const diffDays = Math.ceil((nearest.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        const diffDays = differenceInCalendarDays(nearest, now);
 
         if (diffDays <= 3) nearestStatus = 'expired'; // Red for very close
         else if (diffDays <= 7) nearestStatus = 'warning'; // Orange for upcoming week
@@ -70,7 +71,8 @@ export default function ImportantEvents() {
                 <div className={styles.list}>
                     {displayEvents.map(event => {
                         const date = new Date(event.start);
-                        const isToday = new Date().toDateString() === date.toDateString();
+                        const diffDays = differenceInCalendarDays(date, new Date());
+                        const isToday = diffDays === 0;
                         const dateString = isToday ? 'Dnes' : date.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'numeric' });
 
                         return (

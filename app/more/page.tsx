@@ -2,9 +2,12 @@
 
 import CategoryCard from '@/components/CategoryCard';
 import Link from 'next/link';
-import { Gift, Calendar, CreditCard, PieChart, FileText, ChevronLeft, ChefHat, Camera } from 'lucide-react';
+import { Gift, Calendar, CreditCard, PieChart, FileText, ChevronLeft, ChefHat, Camera, ShieldCheck } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function MorePage() {
+    const { isAdmin } = useAuth();
+
     return (
         <main className="container">
             <header style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -75,6 +78,16 @@ export default function MorePage() {
                         color="#3b82f6" // Blue-500
                     />
                 </Link>
+                {isAdmin && (
+                    <Link href="/admin">
+                        <CategoryCard
+                            title="Administrace"
+                            description="Správa systému"
+                            icon={ShieldCheck}
+                            color="#343a40" // Dark grey
+                        />
+                    </Link>
+                )}
             </div>
         </main>
     );

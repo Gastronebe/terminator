@@ -107,8 +107,65 @@
     padding: 1rem;
     border-radius: 1rem;
     box-shadow: var(--shadow-sm);
-    white-space: pre-wrap;
-    line-height: 1.5;
+    line-height: 1.6;
+}
+
+.mdParagraph {
+    margin-bottom: 0.75rem;
+}
+
+.mdParagraph:last-child {
+    margin-bottom: 0;
+}
+
+.tableWrapper {
+    width: 100%;
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+.tableWrapper table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.tableWrapper th,
+.tableWrapper td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.tableWrapper th {
+    background-color: rgba(0, 0, 0, 0.03);
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.tableWrapper tr:last-child td {
+    border-bottom: none;
+}
+
+.botBubble h3 {
+    font-size: 1.1rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.75rem;
+    color: #4338ca;
+    font-weight: 700;
+}
+
+.botBubble ul,
+.botBubble ol {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+}
+
+.botBubble li {
+    margin-bottom: 0.5rem;
 }
 
 .userBubble {

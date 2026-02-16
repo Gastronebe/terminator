@@ -2,11 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Car, FileText, PieChart, Menu, Calendar, CreditCard, Home as HomeIcon, ChefHat, Camera } from 'lucide-react';
+import { Home, Car, FileText, PieChart, Menu, Calendar, CreditCard, Home as HomeIcon, ChefHat, Camera, ShieldCheck } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 import styles from './Sidebar.module.css';
 
 export default function Sidebar() {
     const pathname = usePathname();
+    const { isAdmin } = useAuth();
 
     const isActive = (path: string) => pathname === path;
 
@@ -53,6 +55,13 @@ export default function Sidebar() {
                     <Camera size={20} />
                     <span>Kamera</span>
                 </Link>
+
+                {isAdmin && (
+                    <Link href="/admin" className={`${styles.navItem} ${isActive('/admin') ? styles.active : ''}`}>
+                        <ShieldCheck size={20} />
+                        <span>Administrace</span>
+                    </Link>
+                )}
             </nav>
         </aside>
     );
