@@ -2,7 +2,7 @@
 
 import { useDiscountCards } from '@/hooks/useData';
 import Link from 'next/link';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Pencil } from 'lucide-react';
 import { deleteDoc, doc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 
@@ -44,9 +44,14 @@ export default function AdminCardsPage() {
                                 <div style={{ fontSize: 13, color: '#666', fontFamily: 'monospace' }}>{card.code}</div>
                             </div>
                         </div>
-                        <button onClick={() => handleDelete(card.id)} style={{ padding: 8, color: '#ff3b30', background: 'none', border: 'none', cursor: 'pointer' }}>
-                            <Trash2 size={20} />
-                        </button>
+                        <div style={{ display: 'flex', gap: 8 }}>
+                            <Link href={`/admin/cards/${card.id}`} style={{ padding: 8, color: '#007AFF', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                                <Pencil size={20} />
+                            </Link>
+                            <button onClick={() => handleDelete(card.id)} style={{ padding: 8, color: '#ff3b30', background: 'none', border: 'none', cursor: 'pointer' }}>
+                                <Trash2 size={20} />
+                            </button>
+                        </div>
                     </div>
                 ))}
             </div>

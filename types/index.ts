@@ -112,6 +112,7 @@ export interface DiscountCard {
     type: 'barcode' | 'qrcode' | 'text';
     color?: string;
     note?: string;
-    logoUrl?: string;
+    logoUrl?: string; // Base64
+    codeImageUrl?: string; // Base64
     createdAt?: number;
 }
