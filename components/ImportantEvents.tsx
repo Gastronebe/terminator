@@ -71,8 +71,8 @@ export default function ImportantEvents() {
                 <div className={styles.list}>
                     {displayEvents.map(event => {
                         const date = new Date(event.start);
-                        const diffDays = differenceInCalendarDays(date, new Date());
-                        const isToday = diffDays === 0;
+                        // Force local time comparison for "Today"
+                        const isToday = new Date().toLocaleDateString() === date.toLocaleDateString();
                         const dateString = isToday ? 'Dnes' : date.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'numeric' });
 
                         return (

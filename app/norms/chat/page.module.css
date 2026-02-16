@@ -108,6 +108,10 @@
     border-radius: 1rem;
     box-shadow: var(--shadow-sm);
     line-height: 1.6;
+    word-break: break-word;
+    /* Support for long words */
+    overflow-wrap: anywhere;
+    /* Ensure wrapping in all cases */
 }
 
 .mdParagraph {
@@ -339,5 +343,27 @@
 
     100% {
         opacity: 1;
+    }
+}
+
+/* Mobile Responsiveness Improvements */
+@media (max-width: 600px) {
+    .messageContentWrapper {
+        max-width: 92%;
+        /* Give more space on mobile */
+    }
+
+    .messageBubble {
+        padding: 0.75rem;
+        /* Slightly smaller padding */
+    }
+
+    .header {
+        padding: 0.5rem 0;
+        margin-bottom: 0.5rem;
+    }
+
+    .titleArea h1 {
+        font-size: 1.1rem;
     }
 }

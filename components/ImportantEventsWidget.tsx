@@ -31,7 +31,7 @@ export default function ImportantEventsWidget() {
 
                 <div>
                     <div style={{ fontSize: 14, fontWeight: 600 }}>
-                        {diffDays <= 0 ? 'Dnes:' : diffDays === 1 ? 'Zítra:' : `Za ${diffDays} dní:`}
+                        {diffDays === 0 ? 'Dnes:' : `${eventDate.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'numeric' })}:`}
                     </div>
                     <div style={{ fontSize: 16, color: '#333' }}>
                         {nearestEvent.summary}
