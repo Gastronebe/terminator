@@ -3,10 +3,10 @@ import { adminAuth, adminDb } from '@/lib/firebaseAdmin';
 
 export async function DELETE(
     req: NextRequest,
-    { params }: { params: { userId: string } }
+    { params }: { params: Promise<{ userId: string }> }
 ) {
     try {
-        const { userId } = params;
+        const { userId } = await params;
 
         if (!userId) {
             return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
@@ -27,10 +27,10 @@ export async function DELETE(
 
 export async function PATCH(
     req: NextRequest,
-    { params }: { params: { userId: string } }
+    { params }: { params: Promise<{ userId: string }> }
 ) {
     try {
-        const { userId } = params;
+        const { userId } = await params;
         const { name, role } = await req.json();
 
         if (!userId) {
