@@ -98,6 +98,7 @@ export default function NormsAdminPage() {
             id: '',
             name: '',
             parentGroup: 'POLÉVKY',
+            source: 'hot',
             order: categories.length > 0 ? Math.max(...categories.map(c => c.order)) + 1 : 100
         });
         setShowModal(true);
