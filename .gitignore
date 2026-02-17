@@ -44,3 +44,8 @@ next-env.d.ts
 import-progress.json
 debug_pdf.txt
 *.log
+
+# PWA
+public/sw.js
+public/workbox-*.js
+public/worker-*.js
