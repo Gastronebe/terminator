@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local debug / state
+import-progress.json
+debug_pdf.txt
+*.log

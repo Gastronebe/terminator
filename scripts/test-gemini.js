@@ -21,13 +21,14 @@ async function run() {
 
     try {
         const genAI = new GoogleGenerativeAI(key);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // Try 1.5-flash as it's more standard
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-        console.log("Testing with gemini-1.5-flash...");
+        console.log("Testing with gemini-2.0-flash...");
         const result = await model.generateContent("Ahoj, jsi tam?");
         const response = await result.response;
         console.log("Response:", response.text());
     } catch (error) {
+        console.error("FULL ERROR:", JSON.stringify(error, null, 2));
         console.error("Error Message:", error.message);
         if (error.stack) console.error("Stack:", error.stack);
     }

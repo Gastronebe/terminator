@@ -6,20 +6,46 @@ export async function getGoogleCalendarClient() {
     const clientEmail = process.env.GOOGLE_CLIENT_EMAIL;
     let privateKey = process.env.GOOGLE_PRIVATE_KEY;
 
+    // ROBUST KEY PARSING (Same as Firebase fix)
+
+    // 1. Basic trim
+    privateKey = privateKey?.trim();
+
+    // 2. Remove potential trailing comma from JSON copy-paste
+    if (privateKey?.endsWith(',')) {
+        privateKey = privateKey.slice(0, -1).trim();
+    }
+
+    // 3. Remove surrounding quotes
+    if ((privateKey?.startsWith('"') && privateKey?.endsWith('"')) ||
+        (privateKey?.startsWith("'") && privateKey?.endsWith("'"))) {
+        privateKey = privateKey.substring(1, privateKey.length - 1);
+    }
+
+    // 4. Handle escaped newlines
     if (privateKey && privateKey.includes('\\n')) {
         privateKey = privateKey.replace(/\\n/g, '\n');
     }
 
-    // Remove potential surrounding quotes from .env
-    if (privateKey?.startsWith('"') && privateKey?.endsWith('"')) {
-        privateKey = privateKey.substring(1, privateKey.length - 1);
+    // 5. Remove carriage returns
+    if (privateKey) {
+        privateKey = privateKey.replace(/\r/g, '');
     }
-
-    privateKey = privateKey?.trim();
 
     if (!clientEmail || !privateKey) {
         throw new Error('Google Calendar credentials not configured');
     }
+
+    // 6. Strict PEM reconstruction
+    const HEADER = "-----BEGIN PRIVATE KEY-----";
+    const FOOTER = "-----END PRIVATE KEY-----";
+
+    let body = privateKey;
+    if (body.includes(HEADER)) body = body.replace(HEADER, '');
+    if (body.includes(FOOTER)) body = body.replace(FOOTER, '');
+
+    body = body.trim();
+    privateKey = `${HEADER}\n${body}\n${FOOTER}\n`;
 
     const auth = new google.auth.JWT({
         email: clientEmail,
