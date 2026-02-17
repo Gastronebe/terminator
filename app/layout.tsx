@@ -1,10 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
-import AuthGuard from "@/components/AuthGuard";
+import AppShell from "@/components/AppShell";
 import { Poppins, Montserrat } from 'next/font/google';
-import Sidebar from "@/components/Sidebar";
-import BottomNavigation from "@/components/BottomNavigation";
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -50,19 +48,9 @@ export default function RootLayout({
     <html lang="cs" className={`${poppins.variable} ${montserrat.variable}`}>
       <body className="antialiased">
         <AuthProvider>
-          <AuthGuard>
-            <div style={{ display: 'flex', minHeight: '100vh' }}>
-              <Sidebar />
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <main style={{ flex: 1, paddingBottom: 100 }}> {/* Padding for BottomNav on mobile */}
-                  {children}
-                </main>
-                <div className="md:hidden"> {/* Hide BottomNav on desktop */}
-                  <BottomNavigation />
-                </div>
-              </div>
-            </div>
-          </AuthGuard>
+          <AppShell>
+            {children}
+          </AppShell>
         </AuthProvider>
       </body>
     </html>

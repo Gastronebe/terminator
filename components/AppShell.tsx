@@ -3,19 +3,23 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect } from 'react';
+import Sidebar from './Sidebar';
+import BottomNavigation from './BottomNavigation';
 
-const AuthGuard = ({ children }: { children: React.ReactNode }) => {
+const AppShell = ({ children }: { children: React.ReactNode }) => {
     const { user, loading } = useAuth();
     const router = useRouter();
     const pathname = usePathname();
 
-    const publicPaths = ['/login', '/icon.png', '/logo.png', '/manifest.json'];
+    const publicPaths = ['/login', '/icon.png', '/logo.png', '/manifest.json', '/sw.js', '/workbox-'];
+
+    const isPublicPath = publicPaths.some(path => pathname.startsWith(path));
 
     useEffect(() => {
-        if (!loading && !user && !publicPaths.includes(pathname)) {
+        if (!loading && !user && !isPublicPath) {
             router.push('/login');
         }
-    }, [user, loading, pathname, router]);
+    }, [user, loading, pathname, router, isPublicPath]);
 
     if (loading) {
         return (
@@ -50,11 +54,28 @@ const AuthGuard = ({ children }: { children: React.ReactNode }) => {
         );
     }
 
-    if (!user && !publicPaths.includes(pathname)) {
-        return null;
+    if (!user) {
+        // Unauthenticated - only show content if public path
+        if (isPublicPath) {
+            return <>{children}</>;
+        }
+        return null; // Will redirect in useEffect
     }
 
-    return <>{children}</>;
+    // Authenticated - show full layout
+    return (
+        <div style={{ display: 'flex', minHeight: '100vh' }}>
+            <Sidebar />
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                <main style={{ flex: 1, paddingBottom: 100 }}> {/* Padding for BottomNav on mobile */}
+                    {children}
+                </main>
+                <div className="md:hidden"> {/* Hide BottomNav on desktop */}
+                    <BottomNavigation />
+                </div>
+            </div>
+        </div>
+    );
 };
 
-export default AuthGuard;
+export default AppShell;
