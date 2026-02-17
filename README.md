@@ -1,6 +1,6 @@
-# 🏠 Home App (Terminator 3000)
+# 🏠 Home App (Termínator 3000)
 
-Komplexní aplikace pro správu domácnosti, financí, majetku a kulinářských norem.
+Komplexní aplikace pro správu termínů (STK, doklady), financí, majetku, pro zjednodušení hádek o recepturách pokrmů přidány normy Teplé a Studené kuchyně (ČSN) včetně AI asistenta Sváti Kuřátka.
 
 ## 🌟 Klíčové Funkce
 
@@ -12,7 +12,6 @@ Komplexní aplikace pro správu domácnosti, financí, majetku a kulinářských
 ### 🚗 Správa Majetku (Assets)
 - **Auta:** Sledování STK, dálničních známek, pojištění, stavu tachometru a servisních záznamů.
 - **Nemovitosti:** Evidence dokumentů, revizí a důležitých termínů.
-- **Obecný majetek:** Evidence cenností a vybavení.
 - **Dokumenty:** Ukládání a sledování platnosti osobních dokladů (občanky, pasy).
 
 ### 🍳 Normy & Receptury (Normy)
