@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Mic, Volume2, User, Bot, StopCircle, ArrowLeft, History, Plus } from 'lucide-react';
+import { Send, Mic, Volume2, User, Bot, StopCircle, ArrowLeft, History, Plus, MessageSquare, ChefHat, Utensils } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { authFetch } from '@/lib/authFetch';
 import { ChatMessage, ChatSession } from '@/types';
@@ -9,6 +9,48 @@ import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import styles from './page.module.css';
+
+const POEM_LINES = [
+    "Kuchař je umělec a psycholog a stratég,",
+    "vždy plné mísy, chytře vmísí do šarvátek.",
+    "Má v rukou argumenty, které přesvědčí,",
+    "tedy hned a bez řečí."
+];
+
+const ALL_WORDS = POEM_LINES.join(' ').split(/\s+/);
+
+function ProgressivePoem() {
+    const [wordIndex, setWordIndex] = useState<number>(0);
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setWordIndex(prev => (prev + 1) % ALL_WORDS.length);
+        }, 400);
+        return () => clearInterval(timer);
+    }, []);
+
+    return (
+        <div className={styles.karaokeSingleLine}>
+            {ALL_WORDS.map((word, i) => (
+                <span
+                    key={i}
+                    className={`${styles.karaokeWord} ${i === wordIndex ? styles.wordActive : ''}`}
+                >
+                    {word}{' '}
+                </span>
+            ))}
+        </div>
+    );
+}
+
+const getVocativeName = (name: string | null | undefined) => {
+    if (!name) return 'pane šéfe';
+    const n = name.trim().toLowerCase();
+    if (n === 'jana') return 'Jano';
+    if (n === 'luda') return 'Luďo';
+    if (n === 'pavla') return 'Pavlo';
+    return name;
+};
 
 export default function ChatPage() {
     const { user } = useAuth();
@@ -27,10 +69,15 @@ export default function ChatPage() {
     useEffect(() => {
         if (!currentSessionId && messages.length === 0 && user) {
             setMessages([
-                { id: 'welcome', role: 'assistant', content: `Dobrý den, ${user.name || 'pane šéfe'}. Jsem Svaťa Kuřátko a jsem vám plně k službám. Copak dneska budeme vařit?`, timestamp: Date.now() }
+                { id: 'welcome', role: 'assistant', content: `Dobrý den, ${getVocativeName(user.name)}. Jsem Svaťa Kuřátko a jsem vám plně k službám. Copak dneska budeme vařit?`, timestamp: Date.now() }
             ]);
         }
     }, [user, currentSessionId]);
+
+    // Scroll to bottom on messages change
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messages, loading]);
 
     // Fetch history on mount
     useEffect(() => {
@@ -52,27 +99,50 @@ export default function ChatPage() {
         }
     };
 
-    const saveSession = async (updatedMessages: ChatMessage[]) => {
+    const saveSession = async (updatedMessages: ChatMessage[], forcedTitle?: string, isRecipe: boolean = false) => {
         if (!user) return;
         try {
             const lastMsg = updatedMessages[updatedMessages.length - 1];
-            const firstUserMsg = updatedMessages.find(m => m.role === 'user')?.content || 'Nová konverzace';
+
+            // Get current session if exists to check its current title
+            const currentSession = historyList.find(s => s.id === currentSessionId);
+
+            // Logic for title:
+            // 1. If we have a forcedTitle (from AI) and it's a recipe, we definitely want it.
+            // 2. If existing session is already a recipe, we might keep its title unless new one is also a recipe.
+            // 3. Fallback to generic message snippet.
+            let title = forcedTitle;
+
+            if (!title) {
+                const firstUserMsg = updatedMessages.find(m => m.role === 'user')?.content || 'Nová konverzace';
+                title = firstUserMsg.substring(0, 30) + (firstUserMsg.length > 30 ? '...' : '');
+            }
+
+            // Don't overwrite a specific recipe title with a generic discussion title later in the chat
+            if (currentSession?.isRecipe && !isRecipe) {
+                title = currentSession.title;
+            }
 
             const res = await authFetch('/api/norms/history', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     sessionId: currentSessionId,
-                    title: firstUserMsg.substring(0, 30) + (firstUserMsg.length > 30 ? '...' : ''),
+                    userName: user.name,
+                    title: title,
+                    isRecipe: isRecipe || currentSession?.isRecipe || false,
                     lastMessage: lastMsg.content.substring(0, 50),
                     messages: updatedMessages
                 })
             });
-            const data = await res.json();
-            if (data.id && !currentSessionId) {
-                setCurrentSessionId(data.id);
+
+            if (res.ok) {
+                const data = await res.json();
+                if (!currentSessionId && data.id) {
+                    setCurrentSessionId(data.id);
+                }
+                fetchHistory(); // Refresh list to show update
             }
-            fetchHistory();
         } catch (err) {
             console.error('Save session error:', err);
         }
@@ -80,7 +150,18 @@ export default function ChatPage() {
 
     // Handle Send
     const handleSend = async () => {
-        if (!input.trim() || loading || !user) return;
+        if (!input.trim() || loading) return;
+
+        if (!user) {
+            console.error('handleSend: No user session found');
+            setMessages(prev => [...prev, {
+                id: Date.now().toString(),
+                role: 'assistant',
+                content: 'Omlouvám se, nejste přihlášen. Zkuste prosím obnovit stránku.',
+                timestamp: Date.now()
+            }]);
+            return;
+        }
 
         const userMsg: ChatMessage = { id: Date.now().toString(), role: 'user', content: input, timestamp: Date.now() };
         const newMessages = [...messages, userMsg];
@@ -117,7 +198,7 @@ export default function ChatPage() {
             };
             const finalMessages = [...newMessages, botMsg];
             setMessages(finalMessages);
-            saveSession(finalMessages);
+            saveSession(finalMessages, data.suggestedTitle, data.isRecipe);
 
         } catch (error: any) {
             console.error('Chat error:', error);
@@ -142,6 +223,12 @@ export default function ChatPage() {
         setCurrentSessionId(null);
         setMessages([]);
         setShowHistory(false);
+        // Reset to welcome message
+        if (user) {
+            setMessages([
+                { id: 'welcome', role: 'assistant', content: `Dobrý den, ${getVocativeName(user.name)}. Jsem Svaťa Kuřátko a jsem vám plně k službám. Copak dneska budeme vařit?`, timestamp: Date.now() }
+            ]);
+        }
     };
 
     // Speech to Text (Web Speech API)
@@ -194,174 +281,220 @@ export default function ChatPage() {
     };
 
     return (
-        <main className={`container ${styles.container}`}>
-            {/* Header */}
-            <div className={styles.header}>
-                <div className="flex items-center gap-2">
+        <div className={styles.pageWrapper}>
+            <main className={`container ${styles.container}`}>
+                {/* Header */}
+                <div className={styles.header}>
                     <Link href="/norms" className={styles.backButton}>
                         <ArrowLeft size={24} />
                     </Link>
-                    <button onClick={() => setShowHistory(!showHistory)} className={styles.iconButton} title="Historie chatů">
-                        <History size={24} />
-                    </button>
-                    <button onClick={startNewChat} className={styles.iconButton} title="Nový chat">
-                        <Plus size={24} />
-                    </button>
-                </div>
-                <div className={styles.titleArea}>
-                    <h1>
-                        <Bot className="text-indigo-600" />
-                        Zeptat se Svatopluka
-                    </h1>
-                    <p className={styles.subtitle}>AI asistent (Sváťa Kuřátko)</p>
-                </div>
-            </div>
 
-            {/* History Sidebar/Overlay */}
-            {showHistory && (
-                <div className={styles.historyOverlay} onClick={() => setShowHistory(false)}>
-                    <div className={styles.historySidebar} onClick={e => e.stopPropagation()}>
-                        <div className={styles.historyHeader}>
-                            <h2>Historie konverzací</h2>
-                            <button onClick={() => setShowHistory(false)} className={styles.closeButton}>×</button>
-                        </div>
-                        <div className={styles.historyList}>
-                            {historyList.length === 0 ? (
-                                <p className={styles.emptyHistory}>Zatím žádná historie</p>
-                            ) : (
-                                historyList.map(session => (
-                                    <div
-                                        key={session.id}
-                                        className={`${styles.historyItem} ${currentSessionId === session.id ? styles.activeHistoryItem : ''}`}
-                                        onClick={() => loadSession(session)}
-                                    >
-                                        <div className={styles.historyItemTitle}>{session.title}</div>
-                                        <div className={styles.historyItemDate}>{new Date(session.updatedAt).toLocaleDateString('cs-CZ')}</div>
-                                    </div>
-                                ))
-                            )}
-                        </div>
+                    <div className={styles.titleArea}>
+                        <h1>
+                            <Bot className="text-orange-600" size={24} />
+                            Svatopluk Kuřátko
+                        </h1>
+                        <p className={styles.subtitle}>AI Kuchařský Mistr (Sváťa)</p>
+                    </div>
+
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => setShowHistory(!showHistory)}
+                            className={styles.iconButton}
+                            title="Historie konverzací"
+                        >
+                            <History size={24} />
+                        </button>
+                        <button
+                            onClick={startNewChat}
+                            className={styles.iconButton}
+                            title="Nový chat"
+                        >
+                            <Plus size={24} />
+                        </button>
                     </div>
                 </div>
-            )}
 
-            {/* Messages Area */}
-            <div className={styles.messagesArea}>
-                {messages.map(msg => (
-                    <div key={msg.id} className={`${styles.messageRow} ${msg.role === 'user' ? styles.userRow : ''}`}>
-                        {/* Avatar */}
-                        <div className={`${styles.avatar} ${msg.role === 'user' ? styles.userAvatar : styles.botAvatar}`}>
-                            {msg.role === 'user' ? <User size={16} /> : <Bot size={16} />}
-                        </div>
+                {/* History Overlay/Sidebar */}
+                {showHistory && (
+                    <div className={styles.historyOverlay} onClick={() => setShowHistory(false)}>
+                        <div className={styles.historySidebar} onClick={e => e.stopPropagation()}>
+                            <div className={styles.historyHeader}>
+                                <h2>
+                                    <MessageSquare size={18} className="text-indigo-600" />
+                                    Historie (Všichni)
+                                </h2>
+                                <button onClick={() => setShowHistory(false)} className={styles.closeButton}>&times;</button>
+                            </div>
 
-                        {/* Content */}
-                        <div className={`${styles.messageContentWrapper} ${msg.role === 'user' ? styles.userContentWrapper : ''}`}>
-                            <span className={styles.senderName}>
-                                {msg.role === 'user' ? 'Vy' : 'Sváťa Kuřátko'}
-                            </span>
-
-                            <div className={`${styles.messageBubble} ${msg.role === 'user' ? styles.userBubble : styles.botBubble}`}>
-                                {msg.role === 'user' ? (
-                                    msg.content
-                                ) : (
-                                    <ReactMarkdown
-                                        remarkPlugins={[remarkGfm]}
-                                        components={{
-                                            p: ({ children }: { children: React.ReactNode }) => <p className={styles.mdParagraph}>{children}</p>,
-                                            table: ({ children }: { children: React.ReactNode }) => <div className={styles.tableWrapper}><table>{children}</table></div>,
-                                            text: ({ value }: { value: string }) => {
-                                                if (!value) return null;
-                                                return value.split(/(\[ZDROJ:\s*\d+[^\]]*\])/gi).map((part, i) => {
-                                                    const match = part.match(/\[ZDROJ:\s*(\d+)([^\]]*)\]/i);
-                                                    if (match) {
-                                                        const id = match[1];
-                                                        const name = match[2].trim();
-                                                        return (
-                                                            <Link
-                                                                key={i}
-                                                                href={`/norms/recipe/${id}`}
-                                                                className={styles.inlineSourceLink}
-                                                                title={`Přejít na recept: ${name}`}
-                                                            >
-                                                                [Norma č. {id} {name}]
-                                                            </Link>
-                                                        );
-                                                    }
-                                                    return part;
-                                                });
-                                            }
-                                        } as any}
-                                    >
-                                        {msg.content}
-                                    </ReactMarkdown>
-                                )}
-
-                                {/* Sources */}
-                                {msg.role === 'assistant' && msg.sources && msg.sources.length > 0 && (
-                                    <div className={styles.sources}>
-                                        <span className={styles.sourceLabel}>Zdroje:</span>
-                                        {msg.sources.map((s, i) => (
-                                            <Link key={i} href={`/norms/recipe/${s}`} className={styles.sourceLink}>
-                                                {s}
-                                            </Link>
-                                        ))}
+                            <div className={styles.historyList}>
+                                {historyList.length === 0 ? (
+                                    <div className={styles.emptyHistory}>
+                                        <p>Zatím žádná historie</p>
                                     </div>
-                                )}
-
-                                {/* TTS Action */}
-                                {msg.role === 'assistant' && (
-                                    <button
-                                        onClick={() => speak(msg.content)}
-                                        className={styles.ttsButton}
-                                        title="Přečíst nahlas"
-                                    >
-                                        {isSpeaking ? <StopCircle size={16} /> : <Volume2 size={16} />}
-                                    </button>
+                                ) : (
+                                    historyList.map(session => (
+                                        <div
+                                            key={session.id}
+                                            className={`${styles.historyItem} ${currentSessionId === session.id ? styles.activeHistoryItem : ''}`}
+                                            onClick={() => loadSession(session)}
+                                        >
+                                            <div className={styles.historyItemMain}>
+                                                {session.isRecipe ? (
+                                                    <ChefHat size={14} className={styles.recipeIcon} />
+                                                ) : (
+                                                    <MessageSquare size={14} className={styles.chatIcon} />
+                                                )}
+                                                <div className={styles.historyItemTitle}>{session.title}</div>
+                                            </div>
+                                            <div className={styles.historyItemDate}>
+                                                <span className="flex items-center gap-1">
+                                                    <User size={10} /> {session.userName || 'Neznámý'}
+                                                </span>
+                                                <span>{new Date(session.updatedAt).toLocaleDateString('cs-CZ')}</span>
+                                            </div>
+                                        </div>
+                                    ))
                                 )}
                             </div>
                         </div>
                     </div>
-                ))}
-                {loading && (
-                    <div className={styles.messageRow}>
-                        <div className={`${styles.avatar} ${styles.botAvatar}`}>
-                            <Bot size={16} />
-                        </div>
-                        <div className={styles.loadingBubble}>
-                            Přemýšlím... (čtu v knize norem)
-                        </div>
-                    </div>
                 )}
-                <div ref={messagesEndRef} />
-            </div>
 
-            {/* Input Area */}
-            <div className={styles.inputArea}>
-                <button
-                    onClick={toggleListening}
-                    className={`${styles.iconButton} ${isListening ? styles.listening : ''}`}
-                >
-                    <Mic size={20} />
-                </button>
+                {/* Messages Area */}
+                <div className={styles.messagesArea}>
+                    {messages.map((msg, idx) => (
+                        <div key={msg.id} className={`${styles.messageRow} ${msg.role === 'user' ? styles.userRow : ''}`}>
+                            {/* Avatar */}
+                            <div className={`${styles.avatar} ${msg.role === 'user' ? styles.userAvatar : styles.botAvatar}`}>
+                                {msg.role === 'user' ? <User size={14} /> : <img src="/svata.png" alt="Sváťa" className={styles.avatarImg} />}
+                            </div>
 
-                <input
-                    type="text"
-                    className={styles.textInput}
-                    placeholder="Zeptejte se na recept..."
-                    value={input}
-                    onChange={e => setInput(e.target.value)}
-                    onKeyDown={e => e.key === 'Enter' && handleSend()}
-                    disabled={loading}
-                />
+                            {/* Content */}
+                            <div className={`${styles.messageContentWrapper} ${msg.role === 'user' ? styles.userContentWrapper : ''}`}>
+                                <span className={styles.senderName}>
+                                    {msg.role === 'user' ? 'Vy' : 'Sváťa Kuřátko'}
+                                </span>
 
-                <button
-                    onClick={handleSend}
-                    disabled={!input.trim() || loading}
-                    className={styles.sendButton}
-                >
-                    <Send size={20} />
-                </button>
-            </div>
-        </main>
+                                <div className={`${styles.messageBubble} ${msg.role === 'user' ? styles.userBubble : styles.botBubble}`}>
+                                    {msg.role === 'user' ? (
+                                        <p className="whitespace-pre-wrap">{msg.content}</p>
+                                    ) : (
+                                        <div className="prose prose-sm prose-orange max-w-none prose-p:my-1 prose-headings:my-2 prose-headings:text-orange-800 prose-ul:my-1 prose-li:my-0">
+                                            <ReactMarkdown
+                                                remarkPlugins={[remarkGfm]}
+                                                components={{
+                                                    p: ({ children }: { children?: React.ReactNode }) => <p className={styles.mdParagraph}>{children}</p>,
+                                                    table: ({ children }: { children?: React.ReactNode }) => <div className={styles.tableWrapper}><table>{children}</table></div>,
+                                                    th: ({ children }: { children?: React.ReactNode }) => <th>{children}</th>,
+                                                    td: ({ children }: { children?: React.ReactNode }) => <td>{children}</td>,
+                                                    text: ({ value }: { value?: string }) => {
+                                                        if (!value) return null;
+                                                        // Source parsing helper to keep links in correct places
+                                                        const parts = value.split(/(\[ZDROJ:\s*\d+[^\]]*\])/gi);
+                                                        return (
+                                                            <>
+                                                                {parts.map((part, i) => {
+                                                                    const match = part.match(/\[ZDROJ:\s*(\d+)([^\]]*)\]/i);
+                                                                    if (match) {
+                                                                        const id = match[1];
+                                                                        const name = match[2].trim();
+                                                                        return (
+                                                                            <Link
+                                                                                key={i}
+                                                                                href={`/norms/recipe/${id}`}
+                                                                                className={styles.inlineSourceLink}
+                                                                                title={`Přejít na recept: ${name}`}
+                                                                            >
+                                                                                Norma {id}
+                                                                            </Link>
+                                                                        );
+                                                                    }
+                                                                    return part;
+                                                                })}
+                                                            </>
+                                                        );
+                                                    }
+                                                } as any}
+                                            >
+                                                {msg.content}
+                                            </ReactMarkdown>
+                                        </div>
+                                    )}
+
+                                    {/* Sources (Standalone) */}
+                                    {msg.role === 'assistant' && msg.sources && msg.sources.length > 0 && (
+                                        <div className={styles.sources}>
+                                            <span className={styles.sourceLabel}>
+                                                Zdroje:
+                                            </span>
+                                            {msg.sources.map((s, i) => (
+                                                <Link key={i} href={`/norms/recipe/${s}`} className={styles.sourceLink}>
+                                                    {s}
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {/* TTS Action */}
+                                    {msg.role === 'assistant' && (
+                                        <button
+                                            onClick={() => speak(msg.content)}
+                                            className={styles.ttsButton}
+                                            title="Přečíst nahlas"
+                                        >
+                                            {isSpeaking ? <StopCircle size={14} /> : <Volume2 size={14} />}
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+
+                    {loading && (
+                        <div className={styles.messageRow}>
+                            <div className={`${styles.avatar} ${styles.botAvatar}`}>
+                                <img src="/svata.png" alt="Sváťa" className={styles.avatarImg} />
+                            </div>
+                            <div className={styles.loadingBubble}>
+                                <ProgressivePoem />
+                            </div>
+                        </div>
+                    )}
+                    <div ref={messagesEndRef} style={{ height: '1rem' }} />
+                </div>
+
+                {/* Input Area */}
+                <div className={styles.inputArea}>
+                    <div className={styles.inputContainer}>
+                        <button
+                            onClick={toggleListening}
+                            className={`${styles.iconButton} ${isListening ? styles.listening : ''}`}
+                            title="Hlasové zadávání"
+                        >
+                            <Mic size={20} />
+                        </button>
+
+                        <input
+                            type="text"
+                            className={styles.textInput}
+                            placeholder="Zeptejte se na recept..."
+                            value={input}
+                            onChange={e => setInput(e.target.value)}
+                            onKeyDown={e => e.key === 'Enter' && handleSend()}
+                            disabled={loading}
+                        />
+
+                        <button
+                            onClick={handleSend}
+                            disabled={!input.trim() || loading}
+                            className={styles.sendButton}
+                        >
+                            <Send size={18} />
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
     );
 }

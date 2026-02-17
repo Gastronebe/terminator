@@ -11,6 +11,7 @@ export async function authFetch(url: string, options: RequestInit = {}): Promise
     }
 
     const token = await user.getIdToken();
+    console.log('authFetch: Token retrieved for uid:', user.uid, 'token length:', token.length);
 
     return fetch(url, {
         ...options,

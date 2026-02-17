@@ -7,10 +7,10 @@ export async function GET(req: NextRequest) {
     if (auth instanceof NextResponse) return auth;
 
     try {
-        // Use authenticated user's UID instead of trusting query param
+        // Global history: Fetch last 20 sessions for ALL users
         const snap = await adminDb.collection('chatSessions')
-            .where('userId', '==', auth.uid)
             .orderBy('updatedAt', 'desc')
+            .limit(20)
             .get();
 
         const sessions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -27,31 +27,42 @@ export async function POST(req: NextRequest) {
     if (auth instanceof NextResponse) return auth;
 
     try {
-        const { sessionId, title, lastMessage, messages } = await req.json();
+        const { sessionId, title, lastMessage, messages, userName, isRecipe } = await req.json();
 
         if (sessionId) {
-            // Verify the session belongs to the authenticated user
+            // Verify the session belongs to the authenticated user for editing
+            // BUT for global chat, maybe we want to allow viewing but only owner editing?
+            // For now, let's keep strict ownership for UPDATES/DELETES to prevent vandalism
             const docRef = adminDb.collection('chatSessions').doc(sessionId);
             const existingDoc = await docRef.get();
 
-            if (!existingDoc.exists || existingDoc.data()?.userId !== auth.uid) {
+            if (!existingDoc.exists) {
                 return NextResponse.json({ error: 'Session not found' }, { status: 404 });
+            }
+
+            if (existingDoc.data()?.userId !== auth.uid) {
+                return NextResponse.json({ error: 'Unauthorized to edit this session' }, { status: 403 });
             }
 
             await docRef.update({
                 title: title || 'Nová konverzace',
                 lastMessage: lastMessage || '',
                 messages: messages || [],
-                updatedAt: Date.now()
+                updatedAt: Date.now(),
+                isRecipe: isRecipe ?? existingDoc.data()?.isRecipe ?? false,
+                // Update userName if provided (e.g. user changed name)
+                ...(userName && { userName })
             });
             return NextResponse.json({ success: true, id: sessionId });
         } else {
             // Create new session - use authenticated user's UID
             const docRef = await adminDb.collection('chatSessions').add({
                 userId: auth.uid,
+                userName: userName || 'Neznámý kuchař',
                 title: title || 'Nová konverzace',
                 lastMessage: lastMessage || '',
                 messages: messages || [],
+                isRecipe: isRecipe ?? false,
                 updatedAt: Date.now(),
                 createdAt: Date.now()
             });

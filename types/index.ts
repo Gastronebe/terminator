@@ -179,10 +179,12 @@ export interface ChatMessage {
 export interface ChatSession {
     id: string;
     userId: string;
+    userName?: string; // Author's name for global history
     title: string;
     lastMessage: string;
     updatedAt: number;
     messages: ChatMessage[];
+    isRecipe?: boolean;
 }
 
 export interface PollOption {

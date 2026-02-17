@@ -27,7 +27,8 @@ export async function verifyAuth(req: NextRequest): Promise<AuthResult | null> {
         const role = userDoc.exists ? userDoc.data()?.role || 'user' : 'user';
 
         return { uid: decoded.uid, role };
-    } catch {
+    } catch (err: any) {
+        console.error('verifyAuth Error:', err.code || err.message || err);
         return null;
     }
 }
