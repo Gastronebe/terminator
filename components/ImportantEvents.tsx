@@ -5,6 +5,7 @@ import Card from '@/components/Card';
 import Link from 'next/link';
 import { Calendar } from 'lucide-react';
 import { differenceInCalendarDays } from 'date-fns';
+import { authFetch } from '@/lib/authFetch';
 import styles from './ImportantEvents.module.css';
 
 interface CalendarEvent {
@@ -25,7 +26,7 @@ export default function ImportantEvents() {
     useEffect(() => {
         const fetchEvents = async () => {
             try {
-                const res = await fetch('/api/events');
+                const res = await authFetch('/api/events');
                 if (!res.ok) throw new Error('Failed to fetch events');
                 const data = await res.json();
 

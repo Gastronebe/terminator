@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminLayout from '@/components/AdminLayout';
 import Card from '@/components/Card';
+import { authFetch } from '@/lib/authFetch';
 
 const GOOGLE_COLORS = [
     { id: '1', name: 'Levandulová', hex: '#7986cb' },
@@ -47,7 +48,7 @@ export default function NewEventPage() {
 
             const finalSummary = occasion ? `[${occasion}] ${summary}` : summary;
 
-            const res = await fetch('/api/admin/calendar/events', {
+            const res = await authFetch('/api/admin/calendar/events', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

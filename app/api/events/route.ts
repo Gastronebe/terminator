@@ -1,11 +1,14 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { listCalendarEvents } from '@/lib/googleCalendarAdmin';
+import { requireAuth } from '@/lib/apiAuth';
 
 export const dynamic = 'force-dynamic'; // Disable static optimization
 
-export async function GET() {
-    try {
+export async function GET(req: NextRequest) {
+    const auth = await requireAuth(req);
+    if (auth instanceof NextResponse) return auth;
 
+    try {
         const googleEvents = await listCalendarEvents(30);
 
         const events = googleEvents.map((e: any) => ({

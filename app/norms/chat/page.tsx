@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, Mic, Volume2, User, Bot, StopCircle, ArrowLeft, History, Plus } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { authFetch } from '@/lib/authFetch';
 import { ChatMessage, ChatSession } from '@/types';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
@@ -41,7 +42,7 @@ export default function ChatPage() {
     const fetchHistory = async () => {
         if (!user) return;
         try {
-            const res = await fetch(`/api/norms/history?userId=${user.id}`);
+            const res = await authFetch('/api/norms/history');
             if (res.ok) {
                 const data = await res.json();
                 setHistoryList(data);
@@ -57,12 +58,11 @@ export default function ChatPage() {
             const lastMsg = updatedMessages[updatedMessages.length - 1];
             const firstUserMsg = updatedMessages.find(m => m.role === 'user')?.content || 'Nová konverzace';
 
-            const res = await fetch('/api/norms/history', {
+            const res = await authFetch('/api/norms/history', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     sessionId: currentSessionId,
-                    userId: user.id,
                     title: firstUserMsg.substring(0, 30) + (firstUserMsg.length > 30 ? '...' : ''),
                     lastMessage: lastMsg.content.substring(0, 50),
                     messages: updatedMessages
@@ -92,7 +92,7 @@ export default function ChatPage() {
             // Only send actual conversation history, excluding welcome if too long or system prompts
             const historyForApi = messages.filter(m => m.id !== 'welcome');
 
-            const res = await fetch('/api/norms/chat', {
+            const res = await authFetch('/api/norms/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

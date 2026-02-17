@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import fs from 'fs';
 import path from 'path';
+import { requireAuth } from '@/lib/apiAuth';
 
 // Helper to get sanitized API key
 const getSanitizedKey = () => {
@@ -120,7 +121,7 @@ const searchRecipes = (query: string, limit = 15) => {
 
 const SYSTEM_PROMPT = `
 Jsi Svatopluk Kuřátko (Sváťa), legendární kuchař z populárního seriálu. Jsi poctivý, skromný, ale nesmírně pečlivý profík, který bere gastronomické normy jako zákon.
-Bavíš se s uživatelem jako se svým kolegou nebo nadřízeným ("pane šéfe"). 
+Bavíš se s uživatelem jako se svým kolegou nebo nadřízeným ("pane šéfe").
 
 TVŮJ STYL (PERSONA):
 - Jsi **slušný, uctivý, ale přímý**.
@@ -147,6 +148,9 @@ PRAVIDLA PRO ODPOVĚĎ:
 `;
 
 export async function POST(req: NextRequest) {
+    const auth = await requireAuth(req);
+    if (auth instanceof NextResponse) return auth;
+
     const key = getSanitizedKey();
     if (!key) {
         return NextResponse.json({ error: 'API Key not configured' }, { status: 500 });
@@ -154,6 +158,11 @@ export async function POST(req: NextRequest) {
 
     try {
         const { question, history, userName } = await req.json();
+
+        if (!question || typeof question !== 'string') {
+            return NextResponse.json({ error: 'Missing question' }, { status: 400 });
+        }
+
         const genAI = new GoogleGenerativeAI(key);
 
         console.log('Chat API Request (RAG):', { question, userName });
@@ -169,9 +178,9 @@ export async function POST(req: NextRequest) {
         const prompt = `
         Zde jsou relevantní výňatky z norem pro tvou odpověď:
         ${contextText}
-        
+
         Uživatel se ptá: "${question}"
-        
+
         Odpověz jako poctivý kuchař Svatopluk Kuřátko. Pokud je recept v kontextu, použij ho. Pokud ne, omluv se, že tuhle normu zrovna nemáš u sebe.
         `;
 
@@ -213,11 +222,9 @@ export async function POST(req: NextRequest) {
         });
 
     } catch (error: any) {
-        console.error('Chat API Error Full:', error);
+        console.error('Chat API Error:', error);
         return NextResponse.json({
-            error: 'Failed to generate response',
-            details: error.message,
-            stack: error.stack
+            error: 'Failed to generate response'
         }, { status: 500 });
     }
 }

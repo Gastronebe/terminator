@@ -6,6 +6,7 @@ import { useUsers } from '@/hooks/useData';
 import Card from '@/components/Card';
 import { Trash2, Edit2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { authFetch } from '@/lib/authFetch';
 import styles from './page.module.css';
 
 const MENU_ITEMS = [
@@ -40,7 +41,7 @@ export default function AdminUsersPage() {
         setMessage('Vytvářím...');
 
         try {
-            const res = await fetch('/api/admin/users', {
+            const res = await authFetch('/api/admin/users', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, email, password, role, allowedMenuItems }),
@@ -69,7 +70,7 @@ export default function AdminUsersPage() {
         setMessage('Aktualizuji...');
 
         try {
-            const res = await fetch(`/api/admin/users/${editingUser.id}`, {
+            const res = await authFetch(`/api/admin/users/${editingUser.id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, role, allowedMenuItems }),
@@ -97,7 +98,7 @@ export default function AdminUsersPage() {
         if (!confirm('Opravdu chcete tohoto uživatele smazat? Tato akce je nevratná.')) return;
 
         try {
-            const res = await fetch(`/api/admin/users/${userId}`, {
+            const res = await authFetch(`/api/admin/users/${userId}`, {
                 method: 'DELETE',
             });
 

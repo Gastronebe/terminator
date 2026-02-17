@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { collection, query, onSnapshot, where, orderBy, DocumentData } from 'firebase/firestore';
 import { db } from '@/lib/firebase'; // Ensure this path is correct
+import { authFetch } from '@/lib/authFetch';
 import { Asset, AssetItem, PersonalDocument, Subscription, User, AccessRequest, Birthday, DiscountCard } from '@/types';
 
 // Generic hook helper
@@ -71,7 +72,7 @@ export function useCalendarEvents() {
     useEffect(() => {
         const fetchEvents = async () => {
             try {
-                const res = await fetch('/api/events');
+                const res = await authFetch('/api/events');
                 if (!res.ok) throw new Error('Failed to fetch events');
                 const json = await res.json();
                 if (json.error) throw new Error(json.error);
