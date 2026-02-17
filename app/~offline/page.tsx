@@ -1,8 +1,6 @@
-import { WifiOff } from 'lucide-react';
+'use client';
 
-export const metadata = {
-    title: "Jste offline",
-};
+import { WifiOff } from 'lucide-react';
 
 export default function OfflinePage() {
     return (
