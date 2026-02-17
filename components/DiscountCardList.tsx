@@ -7,6 +7,9 @@ import styles from './DiscountCardList.module.css';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 
+import { useOnlineStatus } from '@/hooks/useOnlineStatus';
+import { WifiOff } from 'lucide-react';
+
 interface Props {
     cards: DiscountCard[];
 }
@@ -15,6 +18,7 @@ export default function DiscountCardList({ cards }: Props) {
     const [selectedCard, setSelectedCard] = useState<DiscountCard | null>(null);
     const { user } = useAuth();
     const isAdmin = user?.role === 'admin';
+    const isOnline = useOnlineStatus();
 
     // Prevent propagation when clicking edit button
     const handleEditClick = (e: React.MouseEvent, cardId: string) => {
@@ -23,6 +27,22 @@ export default function DiscountCardList({ cards }: Props) {
 
     return (
         <>
+            {!isOnline && (
+                <div style={{
+                    backgroundColor: '#f59e0b',
+                    color: 'white',
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    marginBottom: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    fontSize: '0.9rem'
+                }}>
+                    <WifiOff size={16} />
+                    <span>Jste offline. Zobrazuji uložené karty.</span>
+                </div>
+            )}
             <div className={styles.grid}>
                 {cards.map(card => (
                     <div

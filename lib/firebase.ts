@@ -17,16 +17,18 @@ const db: Firestore = getFirestore(app);
 const auth: Auth = getAuth(app);
 
 // Enable Offline Persistence
-import { enableIndexedDbPersistence } from 'firebase/firestore';
+import { enableMultiTabIndexedDbPersistence } from 'firebase/firestore';
 
 if (typeof window !== 'undefined') {
-    enableIndexedDbPersistence(db).catch((err) => {
-        if (err.code == 'failed-precondition') {
+    enableMultiTabIndexedDbPersistence(db).catch((err) => {
+        if (err.code === 'failed-precondition') {
             // Multiple tabs open, persistence can only be enabled in one tab at a a time.
             console.warn('Firebase persistence failed: multiple tabs open');
-        } else if (err.code == 'unimplemented') {
+        } else if (err.code === 'unimplemented') {
             // The current browser does not support all of the features required to enable persistence
             console.warn('Firebase persistence not supported');
+        } else {
+            console.warn('Firebase persistence error:', err);
         }
     });
 }
