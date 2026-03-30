@@ -48,6 +48,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     }
                 } catch (error) {
                     console.error('Error fetching user profile:', error);
+                    // Fallback i při chybě (např. chybějící oprávnění ve Firestore rules)
+                    setUser({
+                        id: fbUser.uid,
+                        email: fbUser.email ?? '',
+                        role: 'user' as UserRole,
+                        name: fbUser.displayName ?? '',
+                        createdAt: Date.now(),
+                    } as User);
                 }
             } else {
                 setUser(null);
