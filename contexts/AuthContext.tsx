@@ -35,10 +35,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     if (userDoc.exists()) {
                         setUser({ id: userDoc.id, ...userDoc.data() } as User);
                     } else {
-                        // Handle case where user exists in Auth but not in Firestore (e.g. first login)
-                        // For now, we might want to auto-create or just set essential info
-                        // setUser({ id: fbUser.uid, email: fbUser.email!, role: 'user', name: fbUser.displayName || '', createdAt: Date.now() });
-                        console.log('User document not found in Firestore');
+                        // Fallback: user exists in Auth but not in Firestore
+                        // Set basic user so AppShell doesn't redirect back to /login
+                        console.warn('User document not found in Firestore – using fallback');
+                        setUser({
+                            id: fbUser.uid,
+                            email: fbUser.email ?? '',
+                            role: 'user' as UserRole,
+                            name: fbUser.displayName ?? '',
+                            createdAt: Date.now(),
+                        } as User);
                     }
                 } catch (error) {
                     console.error('Error fetching user profile:', error);
